@@ -93,8 +93,9 @@ main{min-width:0;display:flex;flex-direction:column;gap:18px}
   .rail{position:static;flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:4px;scrollbar-width:none}
   .rail button{white-space:nowrap;width:auto;border:1px solid var(--line);background:var(--surface-2)}
   .rail .sep,.rail-note{display:none}
-  .roles{margin-left:0;width:100%;justify-content:space-between}
-  .roles button{flex:1;padding:6px 6px;font-size:12.5px}
+  .roles{margin-left:0;width:100%;overflow-x:auto;scrollbar-width:none;justify-content:flex-start}
+  .roles::-webkit-scrollbar{display:none}
+  .roles button{flex:none;padding:6px 10px;font-size:12.5px}
   .who .name{display:none}
   .page-head .kpi{align-items:flex-start!important;text-align:left!important}
 }
@@ -108,8 +109,8 @@ main{min-width:0;display:flex;flex-direction:column;gap:18px}
 .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
 .split{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px;align-items:start}
-@media (max-width:1000px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.split{grid-template-columns:1fr}}
-@media (max-width:600px){.g3,.g2,.g4{grid-template-columns:1fr}}
+@media (max-width:1000px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.split{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:600px){.g3,.g2,.g4{grid-template-columns:minmax(0,1fr)}}
 .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .between{justify-content:space-between}
 .stack{display:flex;flex-direction:column;gap:10px}
@@ -180,6 +181,7 @@ main{min-width:0;display:flex;flex-direction:column;gap:18px}
 .entry .ic.task{background:var(--info-soft);color:var(--info)}
 .entry .ic.claim{background:var(--seal-soft);color:var(--seal)}
 .entry .ic.endorse{background:var(--warn-soft);color:var(--warn)}
+.entry .ic.vouch{background:var(--seal-soft);color:var(--seal)}
 .entry .t{font-weight:600}
 .entry .m{font-size:12.5px;color:var(--muted);margin-top:2px}
 .entry .proof{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
@@ -257,6 +259,33 @@ main{min-width:0;display:flex;flex-direction:column;gap:18px}
 .tick{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:13px}
 .tick .who{font-weight:600}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+.vchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:2px 8px 2px 2px;font-size:12px;color:var(--ink-2)}
+.vchip .avatar{width:20px;height:20px;font-size:9px}
+.vchip .badges{display:inline-flex;gap:2px}
+.vb{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;font-size:9px;font-weight:700;font-family:var(--mono);line-height:1}
+.vb.li{background:var(--info-soft);color:var(--info)}
+.vb.em{background:var(--accent-soft);color:var(--accent-ink)}
+.vb.id{background:var(--seal-soft);color:var(--seal)}
+.vb.off{background:var(--surface-3);color:var(--muted);opacity:.6}
+.voucher{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.voucher:last-child{border-bottom:0}
+.tier{display:flex;gap:8px;align-items:center;font-size:12.5px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2)}
+.tier b{font-family:var(--mono);font-size:11px;min-width:34px}
+.breakdown{display:grid;gap:8px;margin-top:10px}
+.breakdown .b{display:grid;grid-template-columns:150px 1fr 36px;gap:10px;align-items:center;font-size:12.5px}
+.breakdown .b .bar{height:8px}
+.breakdown .b .bar > i.v{background:var(--seal)}
+.breakdown .b .bar > i.c{background:var(--info)}
+.breakdown .b .bar > i.t{background:var(--accent)}
+.breakdown .b .bar > i.d{background:var(--muted)}
+.req{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.req.done{background:var(--surface-2)}
+.req .ctx{font-size:13px;color:var(--ink-2);background:var(--surface-2);border-radius:8px;padding:8px 10px;border-left:3px solid var(--line-2)}
+.radio{display:flex;flex-direction:column;gap:6px}
+.radio label{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:9px;padding:9px 11px;cursor:pointer;font-size:13.5px}
+.radio label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.radio input{margin-top:3px;width:auto;flex:none}
+.radio label > span{flex:1;min-width:0}
 .footer{max-width:1280px;margin:0 auto;padding:0 16px 32px;font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between}
 </style>
 </head>
@@ -277,6 +306,7 @@ main{min-width:0;display:flex;flex-direction:column;gap:18px}
     <div class="roles" role="tablist" aria-label="Choose a perspective">
       <button data-role="home" role="tab">Overview</button>
       <button data-role="candidate" role="tab">Candidate</button>
+      <button data-role="voucher" role="tab">Voucher</button>
       <button data-role="company" role="tab">Company</button>
       <button data-role="verify" role="tab">Verify</button>
       <button data-role="model" role="tab">Model</button>
@@ -301,7 +331,7 @@ main{min-width:0;display:flex;flex-direction:column;gap:18px}
    Vouch Ledger prototype — single-file, in-memory state with
    optional localStorage persistence. Everything here is fictional.
    ============================================================ */
-const KEY='vouch-ledger-proto-v3';
+const KEY='vouch-ledger-proto-v4';
 const uid=()=>Math.random().toString(36).slice(2,9);
 const hex=(n)=>Array.from({length:n},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
 const shortHash=(h)=>h.slice(0,6)+'…'+h.slice(-4);
@@ -325,16 +355,35 @@ function seed(){
     oppFilter:'all',
     candidate:{name:'Alex Rivera',title:'Senior Product Designer',loc:'Austin, TX',handle:'alex-rivera',did:'did:vouch:0x8f3a19c4e2b7d0a6f15c21e',joined:daysAgo(212)},
     ledger:[
-      {id:'a1',kind:'claim',title:'Led checkout redesign that lifted activation 18% at Loom',by:'Vouched by Priya Natarajan (manager) and Daniel Okafor (peer)',date:daysAgo(160),tx:'0x7c1f0a9e3b2d4c5f6a7b8c9d0e1f2a3b4c5d6e7f8091a2b3c4d5e6f708192a3b',block:18391204,status:'verified',weight:14,vouches:2},
-      {id:'a2',kind:'skill',title:'Figma prototyping · advanced',by:'Attested by Priya Natarajan, Head of Design, Loom',date:daysAgo(158),tx:'0x91be2c7d4e5f60718293a4b5c6d7e8f9011223344556677889900aabbccddeef',block:18391877,status:'verified',weight:10},
-      {id:'a3',kind:'endorse',title:'Design systems',by:'Endorsed by Daniel Okafor, Staff Designer, Loom',date:daysAgo(151),tx:'0x3a4b5c6d7e8f9011223344556677889900aabbccddeeff00112233445566778',block:18402210,status:'verified',weight:6},
+      {id:'a1',kind:'claim',title:'Led checkout redesign that lifted activation 18% at Loom',by:'Vouched by Priya Natarajan (manager) and Daniel Okafor (peer)',date:daysAgo(160),tx:'0x7c1f0a9e3b2d4c5f6a7b8c9d0e1f2a3b4c5d6e7f8091a2b3c4d5e6f708192a3b',block:18391204,status:'verified',weight:14,vouches:2,vouchedBy:['priya','daniel']},
+      {id:'a2',kind:'skill',title:'Figma prototyping · advanced',by:'Attested by Priya Natarajan, Head of Design, Loom',date:daysAgo(158),tx:'0x91be2c7d4e5f60718293a4b5c6d7e8f9011223344556677889900aabbccddeef',block:18391877,status:'verified',weight:10,attester:'priya'},
+      {id:'a3',kind:'endorse',title:'Design systems',by:'Endorsed by Daniel Okafor, Staff Designer, Loom',date:daysAgo(151),tx:'0x3a4b5c6d7e8f9011223344556677889900aabbccddeeff00112233445566778',block:18402210,status:'verified',weight:6,attester:'daniel'},
       {id:'a4',kind:'task',title:'Import workflow usability test · 30 min',by:'Completed for Quill CRM · paid $60',date:daysAgo(74),tx:'0x5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c',block:18866321,status:'verified',weight:8,payout:60,company:'quill'},
       {id:'a5',kind:'task',title:'Labeled 200 UI screenshots for training data',by:'Completed for Lattice Labs · paid $150 · accuracy 97%',date:daysAgo(61),tx:'0xa2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091',block:18942018,status:'verified',weight:9,payout:150,company:'lattice'},
       {id:'a6',kind:'skill',title:'User research synthesis',by:'Attested by Relay Analytics after onboarding walkthrough + interview',date:daysAgo(55),tx:'0xc4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3',block:18977450,status:'verified',weight:9},
       {id:'a7',kind:'task',title:'Onboarding walkthrough + 20-min interview',by:'Completed for Relay Analytics · paid $120',date:daysAgo(55),tx:'0xe6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5',block:18977452,status:'verified',weight:8,payout:120,company:'relay'},
-      {id:'a8',kind:'claim',title:'Shipped Cadence Health mobile app 0→1 (iOS + Android)',by:'1 of 2 vouches received · Maya Thompson (Eng lead) pending',date:daysAgo(20),tx:'0x0819a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f',block:19218830,status:'pending',weight:4,vouches:1},
+      {id:'a8',kind:'claim',title:'Shipped Cadence Health mobile app 0→1 (iOS + Android)',by:'1 of 2 vouches · Samir Haddad confirmed, Maya Thompson pending',date:daysAgo(20),tx:'0x0819a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f',block:19218830,status:'pending',weight:4,vouches:1,vouchedBy:['sam'],pendingFrom:['maya']},
       {id:'a9',kind:'credential',title:'NN/g UX Certification',by:'Self-attested · certificate document hash anchored',date:daysAgo(12),tx:'0x2a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f70819',block:19275112,status:'verified',weight:3},
+      {id:'a10',kind:'claim',title:'Ran a 40-session usability program for Tandem as a contractor',by:'Vouched by Jules Ferreira (client)',date:daysAgo(33),tx:'0x6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5',block:19140077,status:'verified',weight:8,vouches:1,vouchedBy:['jules']},
     ],
+    vouchers:{
+      priya:{id:'priya',name:'Priya Natarajan',title:'Head of Design, Loom',rel:'Former manager',li:true,em:true,gov:true,standing:84,given:12,disputes:0},
+      daniel:{id:'daniel',name:'Daniel Okafor',title:'Staff Designer, Loom',rel:'Former peer',li:true,em:true,gov:false,standing:79,given:7,disputes:0},
+      jules:{id:'jules',name:'Jules Ferreira',title:'Founder, Tandem',rel:'Former client',li:true,em:true,gov:true,standing:72,given:5,disputes:0},
+      maya:{id:'maya',name:'Maya Thompson',title:'Engineering Lead, Cadence Health',rel:'Former cross-functional lead',li:true,em:true,gov:false,standing:61,given:3,disputes:0},
+      sam:{id:'sam',name:'Samir Haddad',title:'VP Product, Cadence Health',rel:'Former skip-level',li:true,em:false,gov:false,standing:44,given:1,disputes:0},
+    },
+    requests:[
+      {id:'r1',to:'maya',from:'Alex Rivera',fromHandle:'alex-rivera',fromTitle:'Senior Product Designer',claimId:'a8',claim:'Shipped Cadence Health mobile app 0→1 (iOS + Android)',context:'We worked together at Cadence 2020–2022. You led the mobile engineering team; I was design lead on the app from the first prototype to the App Store launch.',rel:'Cross-functional lead',status:'pending',sent:daysAgo(20),others:'Samir Haddad (VP Product) has already confirmed'},
+      {id:'r2',to:'maya',from:'Devon Park',fromHandle:'devon-park',fromTitle:'Ops lead',claimId:null,claim:'Wrote the Cadence Health support operations playbook',context:'You reviewed the escalation section in 2021 and we shipped it together with the on-call rotation.',rel:'Peer',status:'pending',sent:daysAgo(2),others:'No other vouches yet'},
+      {id:'r3',to:'maya',from:'Tomas Lindqvist',fromHandle:'tomas-lindqvist',fromTitle:'Data analyst',claimId:null,claim:'Owned analytics for the Cadence patient portal',context:'',rel:'Report',status:'confirmed',sent:daysAgo(40),others:''},
+    ],
+    voucherLedger:[
+      {id:'v1',kind:'vouch',title:'Vouched for Tomas Lindqvist · portal analytics ownership',by:'Signed with verified identity · no dispute',date:daysAgo(40),tx:'0x'+'ab12'.repeat(16),block:19061120,status:'verified',weight:4},
+      {id:'v2',kind:'vouch',title:'Vouched for Ines Okoro · shipped billing migration',by:'Signed with verified identity · no dispute',date:daysAgo(88),tx:'0x'+'cd34'.repeat(16),block:18821004,status:'verified',weight:4},
+      {id:'v3',kind:'skill',title:'Mobile engineering leadership',by:'Attested by Samir Haddad, VP Product, Cadence Health',date:daysAgo(120),tx:'0x'+'ef56'.repeat(16),block:18640901,status:'verified',weight:10},
+    ],
+    vView2:'inbox',
     opps:[
       {id:'o1',company:'relay',title:'Onboarding walkthrough + 20-min feedback interview',type:'UX walkthrough + interview',pay:120,time:'45 min',seats:6,total:20,issues:['Task attestation','Skill: product feedback'],needs:['Product design','B2B SaaS'],match:94,desc:'Set up a workspace from a blank account, connect a sample data source, and build one dashboard. Then a 20-minute call with our PM.',steps:['Create account with your Vouch invite link','Connect the sample data source','Build one dashboard and share it','Complete the 20-minute interview'],state:'open'},
       {id:'o2',company:'fathom',title:'7-day beta usage with daily check-in',type:'Beta usage + feedback',pay:85,time:'7 days · ~10 min/day',seats:12,total:25,issues:['Task attestation','Endorsement: written feedback'],needs:['Knowledge work','Meetings weekly'],match:88,desc:'Use Fathom for your real meetings for a week. Answer a 3-question check-in each day. Includes 3 months free after.',steps:['Install the desktop app','Record at least 5 meetings','Submit 7 daily check-ins','Rate summaries against your own notes'],state:'active',progress:[true,true,false,false],started:daysAgo(4)},
@@ -375,7 +424,7 @@ function seed(){
 }
 
 let S=load();
-function load(){try{const raw=localStorage.getItem(KEY);if(raw){const p=JSON.parse(raw);if(p&&p.ledger)return p;}}catch(e){}return seed();}
+function load(){try{const raw=localStorage.getItem(KEY);if(raw){const p=JSON.parse(raw);if(p&&p.ledger&&p.vouchers)return p;}}catch(e){}return seed();}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function set(fn){fn(S);save();render();}
 
@@ -412,7 +461,8 @@ const I={
   x:'<svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
 };
 const KIND_ICON={claim:I.doc,skill:I.spark,endorse:I.star,task:I.check,credential:I.shield};
-const KIND_LABEL={claim:'Resume claim',skill:'Skill attestation',endorse:'Endorsement',task:'Paid task',credential:'Credential'};
+const KIND_LABEL={claim:'Resume claim',skill:'Skill attestation',endorse:'Endorsement',task:'Paid task',credential:'Credential',vouch:'Vouch given'};
+KIND_ICON.vouch=I.users;
 
 function sealSVG(cls='seal',text='VOUCH LEDGER · VERIFIED · ON-CHAIN · ',color='var(--seal)'){
   return `<svg class="${cls}" viewBox="0 0 120 120" aria-hidden="true">
@@ -429,6 +479,17 @@ function qrSVG(seedStr){
   for(let y=0;y<n;y++)for(let x=0;x<n;x++){h=(h*1103515245+12345)>>>0;const corner=(x<3&&y<3)||(x>n-4&&y<3)||(x<3&&y>n-4);if(corner||((h>>16)&1))s+=`<rect x="${x}" y="${y}" width="1" height="1"/>`;}
   return `<svg class="qr" viewBox="0 0 ${n} ${n}" fill="currentColor" aria-hidden="true">${s}</svg>`;
 }
+const initials=(n)=>n.split(' ').map(x=>x[0]).join('').slice(0,2);
+function idBadges(v,full=false){
+  const b=(on,cls,ch,label)=>`<span class="vb ${on?cls:'off'}" title="${label}${on?' verified':' not verified'}">${ch}</span>`;
+  const out=b(v.li,'li','in','LinkedIn')+b(v.em,'em','@','Work email')+b(v.gov,'id','ID','Government ID');
+  return full?`<span class="row" style="gap:6px;font-size:12px">${['LinkedIn','Work email','Gov ID'].map((l,i)=>`<span class="row" style="gap:4px;color:${[v.li,v.em,v.gov][i]?'var(--ink-2)':'var(--muted)'}">${[b(v.li,'li','in','LinkedIn'),b(v.em,'em','@','Work email'),b(v.gov,'id','ID','Government ID')][i]}${l}</span>`).join('')}</span>`:`<span class="badges">${out}</span>`;
+}
+const tierOf=(v)=>v.gov&&v.li&&v.em?'Tier 3 · identity + employment':v.li&&v.em?'Tier 2 · employment verified':v.li?'Tier 1 · profile only':'Unverified';
+function vchip(id,pending=false){const v=S.vouchers[id];if(!v)return '';return `<span class="vchip" style="${pending?'opacity:.6;border-style:dashed':''}" title="${v.title} · standing ${v.standing}"><span class="avatar">${initials(v.name)}</span>${v.name.split(' ')[0]}${idBadges(v)}${pending?'<span class="muted">pending</span>':''}</span>`;}
+function vouchChips(e){const a=[];(e.vouchedBy||[]).forEach(id=>a.push(vchip(id)));if(e.attester)a.push(vchip(e.attester));(e.pendingFrom||[]).forEach(id=>a.push(vchip(id,true)));return a.join('');}
+function strengthParts(){const w=e=>e.status==='verified'?e.weight:Math.round(e.weight/2);const sum=k=>S.ledger.filter(e=>k.includes(e.kind)).reduce((a,e)=>a+w(e),0);return [['External vouches',sum(['claim','endorse'])+S.ledger.filter(e=>e.kind==='skill'&&e.attester).reduce((a,e)=>a+w(e),0),'v'],['Company attestations',S.ledger.filter(e=>e.kind==='skill'&&!e.attester).reduce((a,e)=>a+w(e),0),'c'],['Paid tasks',sum(['task']),'t'],['Credentials + stamp',sum(['credential'])+(S.stamped?3:0),'d']];}
+function breakdown(){const parts=strengthParts();const tot=Math.max(1,parts.reduce((a,p)=>a+p[1],0));return `<div class="breakdown">${parts.map(p=>`<div class="b"><span class="muted">${p[0]}</span><div class="bar"><i class="${p[2]}" style="width:${p[1]/tot*100}%"></i></div><b class="num" style="text-align:right">${p[1]}</b></div>`).join('')}</div>`;}
 const logo=(k)=>{const c=co(k);return `<div class="logo" style="background:${c.color}">${c.initial}</div>`;};
 const pillStatus=(s)=>s==='verified'?`<span class="pill good">${I.check} Verified</span>`:s==='pending'?`<span class="pill warn"><span class="dot"></span> Pending vouch</span>`:`<span class="pill neutral">Unverified</span>`;
 
@@ -443,29 +504,31 @@ function copyText(t){const done=()=>toast('Copied to clipboard');try{navigator.c
    ============================================================ */
 const RAILS={
   home:[],
-  candidate:[['dashboard','Home',I.grid],['opps','Paid tests',I.coin],['ledger','My ledger',I.shield],['resume','Resume stamping',I.seal],['apply','Apply links',I.link],['wallet','Earnings',I.wallet]],
+  candidate:[['dashboard','Home',I.grid],['opps','Paid tests',I.coin],['ledger','My ledger',I.shield],['vouches','Vouches',I.users],['resume','Resume stamping',I.seal],['apply','Apply links',I.link],['wallet','Earnings',I.wallet]],
+  voucher:[['inbox','Requests',I.doc],['record','My record',I.shield],['how','How vouching works',I.spark]],
   company:[['dashboard','Overview',I.grid],['campaigns','Campaigns',I.chart],['pool','Tester pool',I.users],['billing','Plan & billing',I.wallet]],
   verify:[['profile','Public profile',I.shield],['stamp','Check a stamp',I.seal]],
   model:[['flywheel','Flywheel',I.spark],['revenue','Revenue math',I.chart],['pricing','Pricing',I.wallet]],
 };
-function curView(){return S.role==='candidate'?S.cView:S.role==='company'?S.coView:S.role==='verify'?S.vView:S.mView;}
-function setView(v){set(s=>{if(s.role==='candidate')s.cView=v;else if(s.role==='company')s.coView=v;else if(s.role==='verify')s.vView=v;else s.mView=v;});window.scrollTo({top:0,behavior:'smooth'});}
+function curView(){return S.role==='candidate'?S.cView:S.role==='voucher'?S.vView2:S.role==='company'?S.coView:S.role==='verify'?S.vView:S.mView;}
+function setView(v){set(s=>{if(s.role==='candidate')s.cView=v;else if(s.role==='voucher')s.vView2=v;else if(s.role==='company')s.coView=v;else if(s.role==='verify')s.vView=v;else s.mView=v;});window.scrollTo({top:0,behavior:'smooth'});}
 
 function render(){
   document.querySelectorAll('.roles button').forEach(b=>b.classList.toggle('on',b.dataset.role===S.role));
   const who=document.getElementById('who');
-  who.innerHTML=S.role==='company'?`<div class="avatar co">R</div><span class="name">Relay Analytics · Growth plan</span>`:S.role==='candidate'?`<div class="avatar">AR</div><span class="name">${S.candidate.name}</span>`:S.role==='verify'?`<span class="pill info">Viewing as hiring manager</span>`:'';
+  who.innerHTML=S.role==='company'?`<div class="avatar co">R</div><span class="name">Relay Analytics · Growth plan</span>`:S.role==='candidate'?`<div class="avatar">AR</div><span class="name">${S.candidate.name}</span>`:S.role==='verify'?`<span class="pill info">Viewing as hiring manager</span>`:S.role==='voucher'?`<div class="avatar" style="background:var(--seal-soft);color:var(--seal)">MT</div><span class="name">Maya Thompson · voucher</span>`:'';
   const rail=document.getElementById('rail');const items=RAILS[S.role];
   const layout=document.getElementById('layout');
   layout.style.gridTemplateColumns=items.length?'' :'1fr';
   rail.hidden=!items.length;
-  const counts={opps:S.opps.filter(o=>o.state==='open').length,campaigns:S.campaigns.filter(c=>c.status==='live').length,ledger:S.ledger.length};
+  const counts={inbox:S.requests.filter(r=>r.status==='pending').length,vouches:S.requests.filter(r=>r.status==='pending'&&r.fromHandle==='alex-rivera').length,opps:S.opps.filter(o=>o.state==='open').length,campaigns:S.campaigns.filter(c=>c.status==='live').length,ledger:S.ledger.length};
   rail.innerHTML=items.map(([k,l,ic])=>`<button data-view="${k}" class="${curView()===k?'on':''}">${ic}<span>${l}</span>${counts[k]?`<span class="cnt">${counts[k]}</span>`:''}</button>`).join('')+
     (S.role==='candidate'?`<div class="sep"></div><div class="rail-note">Everything on your ledger is portable. Export it, or point employers to <span class="mono">vouch.id/m/${S.candidate.handle}</span>.</div>`:'')+
+    (S.role==='voucher'?`<div class="sep"></div><div class="rail-note">You vouch as a verified person. Every vouch is signed with your identity and lands on both ledgers.</div>`:'')+
     (S.role==='company'?`<div class="sep"></div><div class="rail-note">${S.company.seatsTotal-S.company.seatsUsed} of ${S.company.seatsTotal} tester seats left this cycle. Renews ${fmtDate(S.company.renews)}.</div>`:'');
   const main=document.getElementById('main');
   const v=curView();
-  main.innerHTML=S.role==='home'?vHome():S.role==='candidate'?({dashboard:vCandDash,opps:vOpps,ledger:vLedger,resume:vResume,apply:vApply,wallet:vWallet}[v])():S.role==='company'?({dashboard:vCoDash,campaigns:vCampaigns,pool:vPool,billing:vBilling}[v])():S.role==='verify'?({profile:vPublic,stamp:vStampCheck}[v])():({flywheel:vFlywheel,revenue:vRevenue,pricing:vPricing}[v])();
+  main.innerHTML=S.role==='home'?vHome():S.role==='candidate'?({dashboard:vCandDash,opps:vOpps,ledger:vLedger,vouches:vVouches,resume:vResume,apply:vApply,wallet:vWallet}[v])():S.role==='voucher'?({inbox:vInbox,record:vRecord,how:vHow}[v])():S.role==='company'?({dashboard:vCoDash,campaigns:vCampaigns,pool:vPool,billing:vBilling}[v])():S.role==='verify'?({profile:vPublic,stamp:vStampCheck}[v])():({flywheel:vFlywheel,revenue:vRevenue,pricing:vPricing}[v])();
   const tok=S.role==='home'?'overview':`${S.role}-${v}`;
   if(location.hash!=='#'+tok)history.replaceState(null,'','#'+tok);
 }
@@ -477,27 +540,30 @@ function vHome(){
     <div class="hero">
       <div class="eyebrow">Verified careers · paid product testing</div>
       <h1>Get paid to wait. Leave with proof.</h1>
-      <p class="lead">Vouch Ledger turns a job search into paid work that builds a verifiable record. Startups pay to put their product in front of real, vetted people. Candidates earn money and on-chain attestations for the tasks they complete. Hiring managers open one link and see what is actually true.</p>
+      <p class="lead">Vouch Ledger is a career record where every line is confirmed by identity-verified people who were there, and the people confirming build their own record by doing it. Startups fund it: they pay to put their product in front of these vetted candidates, who earn money and attestations for each task. Hiring managers open one link and see what is actually true.</p>
       <div class="row" style="margin-top:18px">
         <button class="btn primary" data-go="candidate">I'm looking for work ${I.arrow}</button>
+        <button class="btn" data-go="voucher">I was asked to vouch</button>
         <button class="btn" data-go="company">I need users and feedback</button>
         <button class="btn ghost" data-go="verify">I'm hiring</button>
       </div>
       <div class="row small muted" style="margin-top:14px;gap:16px">
-        <span>${I.check} Candidates keep 80%</span><span>${I.check} Plans from $99/mo</span><span>${I.check} Ledger is portable and open</span>
+        <span>${I.check} Vouchers are identity-verified</span><span>${I.check} Candidates keep 80%</span><span>${I.check} Plans from $99/mo</span><span>${I.check} Ledger is portable and open</span>
       </div>
     </div>
     <div class="ticker" aria-label="Recent ledger activity">
       <div class="eyebrow">Live on the ledger</div>
       <div class="tick">${logo('lattice')}<div><div class="who">Marisol Chen earned $150</div><div class="small muted">Training-data labeling for Lattice Labs · attestation minted</div></div></div>
       <div class="tick">${logo('relay')}<div><div class="who">Relay Analytics launched a campaign</div><div class="small muted">20 seats · $120 per tester · onboarding walkthrough</div></div></div>
-      <div class="tick"><div class="avatar">IO</div><div><div class="who">Ines Okoro's claim was vouched</div><div class="small muted">"Grew self-serve revenue 3× at Stripe" · 2 of 2 vouches</div></div></div>
+      <div class="tick"><div class="avatar">IO</div><div><div class="who">Ines Okoro's claim reached 2 of 2 vouches</div><div class="small muted">"Grew self-serve revenue 3× at Stripe" · confirmed by a former manager <span class="vb id">ID</span> and a peer <span class="vb em">@</span></div></div></div>
+      <div class="tick"><div class="avatar" style="background:var(--seal-soft);color:var(--seal)">MT</div><div><div class="who">Maya Thompson signed her 4th vouch</div><div class="small muted">Standing 61 → 64 · her own record grows with each one</div></div></div>
       <div class="tick"><div class="avatar" style="background:var(--seal-soft);color:var(--seal)">${I.seal}</div><div><div class="who">Devon Park stamped a resume</div><div class="small muted">6 claims verified · shared with 2 employers</div></div></div>
       <div class="tick">${logo('fathom')}<div><div class="who">Fathom Notes converted 4 testers</div><div class="small muted">Out of 25 · 7-day beta campaign</div></div></div>
     </div>
   </section>
-  <section class="grid g3">
-    <div class="card"><div class="row" style="gap:8px"><div class="avatar">C</div><h3>Candidates</h3></div><p class="muted" style="margin-top:8px">Pick paid tests that match your background. Each one you finish pays out and writes a task attestation to your ledger. Your resume claims get vouched by real people. Stamp your resume and add one link to any application.</p></div>
+  <section class="grid g4">
+    <div class="card"><div class="row" style="gap:8px"><div class="avatar">C</div><h3>Candidates</h3></div><p class="muted" style="margin-top:8px">Ask the people who were there to confirm specific claims. Pick paid tests that match your background; each one pays out and adds a task attestation. Stamp your resume and add one link to any application.</p></div>
+    <div class="card" style="border-color:var(--seal)"><div class="row" style="gap:8px"><div class="avatar" style="background:var(--seal-soft);color:var(--seal)">V</div><h3>Vouchers</h3></div><p class="muted" style="margin-top:8px">Neutral outsiders, not us and not the hiring company. Verify your identity through LinkedIn, work email and optionally an ID, confirm one claim you saw, and sign it. Each vouch is an entry on your own record too.</p></div>
     <div class="card"><div class="row" style="gap:8px"><div class="avatar co">S</div><h3>Startups</h3></div><p class="muted" style="margin-top:8px">Distribution is the hard part. Pay a flat monthly plan, choose testers by verified skills, and get sign-ups, UX sessions, interviews or labeled data within days. Many testers become customers.</p></div>
     <div class="card"><div class="row" style="gap:8px"><div class="avatar" style="background:var(--info-soft);color:var(--info)">H</div><h3>Hiring managers</h3></div><p class="muted" style="margin-top:8px">No account, no fee. Open a candidate's link, see every claim with who vouched for it and the chain record behind it. Check a stamped resume in one paste.</p></div>
   </section>`;
@@ -532,7 +598,12 @@ function vCandDash(){
     </div>
     <div class="stack" style="gap:18px">
       <div class="card">
-        <div class="strength">${strengthRing()}<div><h3>Ledger strength</h3><p class="small muted" style="margin-top:4px">Weighted by verified claims, attester reputation and task history. Stronger ledgers get matched to higher-paying tests first.</p><div class="row small" style="margin-top:10px;gap:14px"><span>${I.arrow} Get Maya to vouch <b>+4</b></span>${S.stamped?'':`<span>${I.arrow} Stamp resume <b>+3</b></span>`}</div></div></div>
+        <div class="strength">${strengthRing()}<div><h3>Ledger strength</h3><p class="small muted" style="margin-top:4px">Most of the weight comes from identity-verified people who were there, not from us.</p>${breakdown()}<div class="row small" style="margin-top:10px;gap:14px">${S.ledger.find(e=>e.id==='a8').status==='pending'?`<span>${I.arrow} Get Maya to vouch <b>+4</b></span>`:''}${S.stamped?'':`<span>${I.arrow} Stamp resume <b>+3</b></span>`}</div></div></div>
+      </div>
+      <div class="card">
+        <div class="row between"><h3>Your vouchers</h3><button class="btn sm ghost" data-view="vouches">All ${I.arrow}</button></div>
+        <div class="row" style="gap:6px;margin-top:8px">${Object.keys(S.vouchers).filter(k=>S.ledger.some(e=>(e.vouchedBy||[]).includes(k)||e.attester===k)).map(k=>vchip(k)).join('')}</div>
+        <p class="small muted" style="margin-top:8px">${S.requests.filter(r=>r.fromHandle==='alex-rivera'&&r.status==='pending').length} request waiting on a reply. Vouchers are verified through LinkedIn, work email and optionally government ID before their signature counts.</p>
       </div>
       <div class="card">
         <h3>Your public link</h3>
@@ -588,7 +659,8 @@ function ledgerEntry(e,compact=false){
   return `<div class="entry ${e.isNew?'new':''}" id="e-${e.id}">
     <div class="ic ${e.kind}">${KIND_ICON[e.kind]||I.shield}</div>
     <div><div class="t">${e.title}</div><div class="m">${KIND_LABEL[e.kind]} · ${e.by}</div>
-      ${compact?'':`<div class="proof">${pillStatus(e.status)}<span class="hash" title="${e.tx}">tx ${shortHash(e.tx)}</span><span class="small muted">block ${e.block.toLocaleString()}</span>${e.payout?`<span class="pill neutral">${money(e.payout)} paid</span>`:''}${e.kind==='claim'&&e.status==='pending'?`<button class="btn sm" data-nudge="${e.id}">Nudge Maya</button>`:''}</div>`}
+      ${vouchChips(e)?`<div class="row" style="gap:5px;margin-top:6px">${vouchChips(e)}</div>`:''}
+      ${compact?'':`<div class="proof">${pillStatus(e.status)}<span class="hash" title="${e.tx}">tx ${shortHash(e.tx)}</span><span class="small muted">block ${e.block.toLocaleString()}</span>${e.payout?`<span class="pill neutral">${money(e.payout)} paid</span>`:''}${e.kind==='claim'&&e.status==='pending'?`<button class="btn sm" data-nudge="${e.id}">Nudge Maya</button>`:''}${e.kind==='claim'&&e.status==='verified'&&(e.vouches||0)<2?`<button class="btn sm ghost" data-view="vouches">Add a 2nd vouch</button>`:''}</div>`}
     </div>
     <div class="small muted num" style="white-space:nowrap">${fmtDate(e.date)}</div>
   </div>`;
@@ -605,10 +677,153 @@ function vLedger(){
       <div style="margin-top:8px">${sorted.map(e=>ledgerEntry(e)).join('')}</div>
     </div>
     <div class="stack" style="gap:18px">
-      <div class="card"><div class="strength">${strengthRing()}<div><h3>How strength is computed</h3><ul class="small muted" style="margin:6px 0 0;padding-left:16px;line-height:1.7"><li>Resume claims with 2+ vouches weigh most</li><li>Attester reputation (their own ledger) multiplies</li><li>Paid tasks count once confirmed by the company</li><li>Pending items count at half weight</li></ul></div></div></div>
+      <div class="card"><div class="strength">${strengthRing()}<div><h3>Where strength comes from</h3><p class="small muted" style="margin-top:4px">External, identity-verified vouches carry the most weight. Company attestations and paid tasks add to it; they never replace it.</p></div></div>${breakdown()}<ul class="small muted" style="margin:10px 0 0;padding-left:16px;line-height:1.7"><li>A claim needs 2 independent vouches to reach full weight</li><li>Each voucher's identity tier and standing multiply their vouch</li><li>Managers and clients weigh more than peers; peers more than reports</li><li>Pending items count at half weight</li></ul></div>
       <div class="card"><h3>Identity</h3><div class="proofbox" style="margin-top:10px"><b>handle</b><span>vouch.id/m/${S.candidate.handle}</span><b>did</b><span>${S.candidate.did}</span><b>chain</b><span>Base mainnet · VouchRegistry v2</span><b>since</b><span>${fmtDate(S.candidate.joined)}</span></div><p class="small muted" style="margin-top:10px">Attestations follow the EAS schema, so any wallet or explorer can read them without Vouch Ledger.</p></div>
-      <div class="card"><h3>Ask for a vouch</h3><p class="small muted" style="margin-top:4px">Send a former manager or peer a link. They confirm a specific claim and sign it. No account needed on their side.</p><div class="field" style="margin-top:10px"><label for="vouchClaim">Claim</label><select id="vouchClaim"><option>Shipped Cadence Health mobile app 0→1</option><option>New claim…</option></select></div><div class="field" style="margin-top:8px"><label for="vouchEmail">Their email</label><input id="vouchEmail" placeholder="maya@cadencehealth.com"></div><button class="btn primary sm" style="margin-top:10px;align-self:flex-start" data-askvouch="1">Send vouch request</button></div>
+      <div class="card"><h3>Ask for a vouch</h3><p class="small muted" style="margin-top:4px">Pick a claim and a person who was there. They verify their identity, confirm the specific claim, and sign it. Two minutes on their side, no account required.</p><button class="btn primary sm" style="margin-top:10px" data-view="vouches">${I.users} Request a vouch</button></div>
     </div>
+  </div>`;
+}
+function vVouches(){
+  const mine=S.requests.filter(r=>r.fromHandle==='alex-rivera');
+  const active=Object.values(S.vouchers).filter(v=>S.ledger.some(e=>(e.vouchedBy||[]).includes(v.id)||e.attester===v.id));
+  const pending=Object.values(S.vouchers).filter(v=>S.ledger.some(e=>(e.pendingFrom||[]).includes(v.id)));
+  const claims=S.ledger.filter(e=>e.kind==='claim');
+  const d=S.reqDraft||{claim:claims.find(c=>(c.vouches||0)<2)?.id||claims[0].id,who:'jules',rel:'Former client'};
+  const who=S.vouchers[d.who];
+  const claim=claims.find(c=>c.id===d.claim);
+  return `
+  <div class="page-head"><div><div class="eyebrow">External verification</div><h1>Vouches</h1><p>People who were there confirm what you did. Every voucher proves who they are first, through LinkedIn, their work email and optionally a government ID. Their signature goes on your ledger and on theirs, so a careless vouch costs them.</p></div>
+    <div class="row"><button class="btn" data-toast="LinkedIn connections imported: 212 people, 41 overlap with your claims">${I.link} Import LinkedIn connections</button></div></div>
+  <div class="split">
+    <div class="stack" style="gap:18px">
+      <div class="card">
+        <div class="row between"><h2>Your vouchers</h2><span class="small muted">${active.length} verified people</span></div>
+        ${active.map(v=>voucherRow(v)).join('')}
+      </div>
+      ${pending.length?`<div class="card"><div class="row between"><h2>Waiting on</h2><span class="pill warn">${pending.length} pending</span></div>${pending.map(v=>voucherRow(v,true)).join('')}</div>`:''}
+      <div class="card">
+        <h2>Requests you sent</h2>
+        <div class="tbl-wrap"><table class="tbl" style="margin-top:6px"><thead><tr><th>To</th><th>Claim</th><th>Sent</th><th>Status</th></tr></thead><tbody>
+        ${mine.map(r=>`<tr><td>${vchip(r.to)}</td><td class="small">${r.claim}</td><td class="small muted num">${fmtDate(r.sent)}</td><td>${r.status==='confirmed'?'<span class="pill good">Confirmed</span>':r.status==='declined'?'<span class="pill bad">Could not confirm</span>':'<span class="pill warn">Pending</span>'}</td></tr>`).join('')}
+        </tbody></table></div>
+      </div>
+    </div>
+    <div class="stack" style="gap:18px">
+      <div class="card">
+        <h3>Request a vouch</h3>
+        <div class="field" style="margin-top:10px"><label for="rqClaim">Which claim?</label><select id="rqClaim" data-rq="claim">${claims.map(c=>`<option value="${c.id}" ${c.id===d.claim?'selected':''}>${c.title}${(c.vouches||0)>=2?' (2/2)':` (${c.vouches||0}/2)`}</option>`).join('')}</select><span class="hint">${claim&&(claim.vouches||0)>=2?'This claim already has full weight. A third vouch adds a little.':'A second independent vouch takes this claim to full weight.'}</span></div>
+        <div class="field" style="margin-top:8px"><label>Who was there?</label><div class="radio">${['jules','priya','daniel','sam','maya'].map(k=>{const v=S.vouchers[k];return `<label><input type="radio" name="rqWho" value="${k}" data-rq="who" ${k===d.who?'checked':''}><span><b>${v.name}</b> <span class="muted small">· ${v.title}</span><div class="row" style="gap:6px;margin-top:3px">${idBadges(v,true)}<span class="mini">standing ${v.standing}</span></div></span></label>`}).join('')}</div><span class="hint">From your LinkedIn overlap at Cadence Health, Loom and Tandem. Or enter an email; they will verify before signing.</span></div>
+        <div class="field" style="margin-top:8px"><label for="rqRel">Your relationship at the time</label><select id="rqRel" data-rq="rel">${['Former manager','Former client','Former peer','Former skip-level','Former cross-functional lead','Former report'].map(r=>`<option ${r===d.rel?'selected':''}>${r}</option>`).join('')}</select><span class="hint">They confirm this too. Manager and client vouches weigh most.</span></div>
+        <div class="note" style="margin-top:10px"><b>${who.name.split(' ')[0]} will see:</b> "Alex says: <i>${claim?claim.title:''}</i>. You were their ${d.rel.toLowerCase().replace('former ','')} at the time. Can you confirm this specific claim?" plus the option to confirm, confirm with edits, or decline.</div>
+        <button class="btn primary" style="margin-top:12px" data-sendreq="1">${I.users} Send request</button>
+      </div>
+      <div class="card"><h3>Identity tiers</h3><div class="stack" style="gap:6px;margin-top:8px">
+        <div class="tier"><b>×1.0</b><span class="vb id">ID</span><span><b style="font-family:var(--body);font-size:12.5px">Tier 3</b> · LinkedIn + work email + government ID</span></div>
+        <div class="tier"><b>×0.8</b><span class="vb em">@</span><span><b style="font-family:var(--body);font-size:12.5px">Tier 2</b> · LinkedIn + work email at the employer named</span></div>
+        <div class="tier"><b>×0.5</b><span class="vb li">in</span><span><b style="font-family:var(--body);font-size:12.5px">Tier 1</b> · LinkedIn profile only, 2+ years old</span></div>
+        <div class="tier"><b>×0</b><span class="vb off">–</span><span>Unverified people cannot vouch</span></div>
+      </div><p class="small muted" style="margin-top:8px">Tier multiplies the base weight of a vouch. Standing (their track record as a voucher) multiplies again, from ×0.6 to ×1.2.</p></div>
+    </div>
+  </div>`;
+}
+function voucherRow(v,pending=false){
+  const what=S.ledger.filter(e=>(e.vouchedBy||[]).includes(v.id)||e.attester===v.id||(pending&&(e.pendingFrom||[]).includes(v.id))).map(e=>e.title);
+  return `<div class="voucher"><div class="avatar" style="width:40px;height:40px;font-size:14px;${pending?'opacity:.6':''}">${initials(v.name)}</div>
+    <div><div class="row" style="gap:8px"><b>${v.name}</b><span class="small muted">${v.title}</span><span class="mini">${v.rel}</span></div>
+      <div class="row" style="gap:10px;margin-top:4px">${idBadges(v,true)}<span class="small muted">${tierOf(v)}</span></div>
+      <div class="small muted" style="margin-top:4px">${pending?'Asked to confirm':'Confirmed'}: ${what.join(' · ')}</div></div>
+    <div class="row" style="gap:10px"><div class="kpi" style="align-items:flex-end"><span class="v" style="font-size:20px">${v.standing}</span><span class="l">standing</span></div>${pending?`<button class="btn sm" data-nudge="${v.id}">Nudge</button>`:''}</div></div>`;
+}
+
+/* ---------- VOUCHER persona (Maya Thompson) ---------- */
+function vInbox(){
+  const me=S.vouchers.maya;
+  const pend=S.requests.filter(r=>r.status==='pending'),done=S.requests.filter(r=>r.status!=='pending');
+  return `
+  <div class="page-head"><div><div class="eyebrow">You were asked to vouch</div><h1>${pend.length} people are waiting on you</h1><p>You are not endorsing a person. You are confirming one specific claim you directly observed. It takes about two minutes, it is signed with your verified identity, and it goes on your record as well as theirs.</p></div>
+    <div class="card tight" style="min-width:220px"><div class="row" style="gap:10px"><div class="avatar" style="background:var(--seal-soft);color:var(--seal)">MT</div><div><b>${me.name}</b><div class="small muted">${me.title}</div></div></div><div class="row" style="gap:10px;margin-top:8px">${idBadges(me,true)}</div><div class="row small muted" style="margin-top:6px;gap:6px"><span>${tierOf(me)}</span><button class="btn sm ghost" style="padding:0 4px" data-toast="ID check opens in a new window (simulated)">Add gov ID for Tier 3</button></div></div></div>
+  <div class="split">
+    <div class="stack">
+      ${pend.map(r=>reqCard(r)).join('')||'<div class="note">Nothing waiting. Nice.</div>'}
+      ${done.length?`<h3 style="margin-top:8px">Answered</h3>${done.map(r=>reqCard(r)).join('')}`:''}
+    </div>
+    <div class="stack" style="gap:18px">
+      <div class="card"><div class="strength"><div class="ring"><svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="42" stroke="var(--surface-3)" stroke-width="8" fill="none"/><circle cx="48" cy="48" r="42" stroke="var(--seal)" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="${2*Math.PI*42}" stroke-dashoffset="${2*Math.PI*42*(1-me.standing/100)}"/></svg><div class="v">${me.standing}<small>STANDING</small></div></div><div><h3>Your standing as a voucher</h3><p class="small muted" style="margin-top:4px">${me.given} vouches given · ${me.disputes} disputed. Standing rises with vouches that hold up and falls if a claim you signed is later contested.</p></div></div></div>
+      <div class="card"><h3>What you get</h3><ul class="small" style="margin:8px 0 0;padding-left:16px;color:var(--ink-2);line-height:1.8"><li>Each vouch is an entry on <b>your</b> ledger, signed and dated.</li><li>Your record shows you as someone whose word holds up, which is worth more than a title.</li><li>People you vouch for can vouch back on claims they saw. Both signatures are public.</li><li>Higher standing means your vouches weigh more for others.</li></ul></div>
+      <div class="card"><h3>Ground rules</h3><ul class="small" style="margin:8px 0 0;padding-left:16px;color:var(--ink-2);line-height:1.8"><li>Only confirm what you directly observed.</li><li>You can edit the wording before you sign.</li><li>"Can't confirm" is private to the requester and never penalises them.</li><li>Vouches are revocable by you, and the revocation is public too.</li></ul></div>
+    </div>
+  </div>`;
+}
+function reqCard(r){
+  const done=r.status!=='pending';
+  return `<div class="req ${done?'done':''}">
+    <div class="row between"><div class="row" style="gap:10px"><div class="avatar">${initials(r.from)}</div><div><b>${r.from}</b> <span class="small muted">· ${r.fromTitle} · asked ${fmtDate(r.sent)}</span><div class="small muted">Says you were their <b>${r.rel.toLowerCase()}</b> at Cadence Health</div></div></div>${done?(r.status==='confirmed'?'<span class="pill good">Confirmed</span>':'<span class="pill neutral">Declined</span>'):'<span class="pill warn">Waiting</span>'}</div>
+    <div style="font-weight:600">"${r.claim}"</div>
+    ${r.context?`<div class="ctx">${r.context}</div>`:''}
+    <div class="row between"><span class="small muted">${r.others}</span>${done?`<button class="btn sm ghost" data-go="verify">See on their public ledger ${I.arrow}</button>`:`<div class="row"><button class="btn sm" data-decline="${r.id}">Can't confirm</button><button class="btn sm primary" data-openvouch="${r.id}">Review & sign</button></div>`}</div>
+  </div>`;
+}
+function vouchModal(id){
+  const r=S.requests.find(x=>x.id===id);const me=S.vouchers.maya;
+  modal(`<div class="row between"><div><div class="eyebrow">Vouch for ${r.from}</div><h2>Confirm one claim</h2></div><button class="btn sm ghost" data-close="1">${I.x}</button></div>
+    <div class="stack" style="gap:12px;margin-top:12px">
+      <div class="field"><label for="vClaimText">The claim (edit the wording if needed)</label><textarea id="vClaimText" rows="2">${r.claim}</textarea></div>
+      <div class="field"><label>Your relationship at the time</label><div class="row"><span class="pill accent">${r.rel}</span><span class="small muted">at Cadence Health, 2020–2022 · matches your LinkedIn</span></div></div>
+      <div class="radio">
+        <label><input type="radio" name="vDec" value="confirm" checked><span><b>I directly observed this and confirm it</b><div class="small muted">Full-weight vouch, signed with your Tier 2 identity</div></span></label>
+        <label><input type="radio" name="vDec" value="partial"><span><b>I confirm it with the edits above</b><div class="small muted">${r.from.split(' ')[0]} sees your wording and can accept it</div></span></label>
+        <label><input type="radio" name="vDec" value="hearsay"><span><b>I heard about it but did not see it myself</b><div class="small muted">Recorded as secondhand at quarter weight</div></span></label>
+      </div>
+      <div class="field"><label for="vNote">Optional note shown on the ledger</label><input id="vNote" placeholder="e.g. Alex ran the design side end to end; we shipped v1 in 9 months."></div>
+      <div class="proofbox"><b>signer</b><span>${me.name} · did:vouch:0x2c…9e41</span><b>tier</b><span>${tierOf(me)}</span><b>standing</b><span>${me.standing} → ${me.standing+3} on sign</span><b>appears on</b><span>${r.from}'s ledger and yours</span><b>revocable</b><span>yes, publicly</span></div>
+    </div>
+    <div class="row between" style="margin-top:16px"><button class="btn ghost" data-close="1">Cancel</button><button class="btn seal" data-signvouch="${r.id}">${I.seal} Sign vouch</button></div>`);
+}
+function signVouch(id){
+  const r=S.requests.find(x=>x.id===id);
+  const text=(document.getElementById('vClaimText')||{}).value||r.claim;
+  const dec=(document.querySelector('input[name="vDec"]:checked')||{}).value||'confirm';
+  const note=(document.getElementById('vNote')||{}).value||'';
+  closeModal();
+  const tx='0x'+hex(64),block=19320000+Math.floor(Math.random()*5000);
+  set(s=>{
+    r.status='confirmed';r.claim=text;
+    const me=s.vouchers.maya;me.given+=1;me.standing=Math.min(100,me.standing+3);
+    s.voucherLedger.unshift({id:uid(),kind:'vouch',title:`Vouched for ${r.from} · ${text.slice(0,48)}${text.length>48?'…':''}`,by:`Signed with verified identity${dec==='hearsay'?' · secondhand':''}${note?' · "'+note+'"':''}`,date:today.toISOString(),tx,block,status:'verified',weight:4,isNew:true});
+    if(r.claimId){const e=s.ledger.find(x=>x.id===r.claimId);if(e){e.title=text;e.pendingFrom=(e.pendingFrom||[]).filter(x=>x!=='maya');e.vouchedBy=[...(e.vouchedBy||[]),'maya'];e.vouches=(e.vouches||0)+1;if(e.vouches>=2){e.status='verified';e.weight=dec==='hearsay'?9:14;}e.by=`Vouched by ${e.vouchedBy.map(k=>s.vouchers[k].name+' ('+s.vouchers[k].rel.replace('Former ','').toLowerCase()+')').join(' and ')}`;e.tx=tx;e.block=block;e.isNew=true;}
+      const t=s.pool.find(x=>x.name===r.from);if(t){t.strength=Math.min(100,t.strength+5);t.att+=1;}}
+  });
+  modal(`<div class="stack" style="gap:12px;align-items:center;text-align:center"><div class="seal-wrap">${sealSVG('seal stamp','VOUCHED · MAYA THOMPSON · TIER 2 · ')}</div><h2>Signed. ${r.from.split(' ')[0]}'s claim ${r.claimId?'is now fully verified':'has its first vouch'}.</h2><p class="small muted">tx ${shortHash(tx)} · block ${block.toLocaleString()} · on both ledgers</p><div class="row"><button class="btn" data-close="1">Back to requests</button><button class="btn primary" data-go="candidate" data-goview="ledger">See it on ${r.from.split(' ')[0]}'s ledger ${I.arrow}</button></div></div>`,{narrow:true});
+}
+function vRecord(){
+  const me=S.vouchers.maya;
+  return `
+  <div class="page-head"><div><div class="eyebrow">Your ledger</div><h1>${me.name}</h1><p>Vouching builds your own record. Every vouch you sign is an entry here, alongside claims and skills others have confirmed for you. Employers see a person whose word has held up ${me.given} times.</p></div><button class="btn" data-copy="https://vouch.id/m/maya-thompson">${I.copy} vouch.id/m/maya-thompson</button></div>
+  <div class="grid g4">
+    <div class="card kpi"><span class="l">Standing</span><span class="v">${me.standing}</span><span class="d">+3 per vouch that holds</span></div>
+    <div class="card kpi"><span class="l">Vouches given</span><span class="v">${me.given}</span><span class="d">${me.disputes} disputed</span></div>
+    <div class="card kpi"><span class="l">Identity tier</span><span class="v" style="font-size:20px">Tier 2</span><span class="d muted">Add gov ID for Tier 3</span></div>
+    <div class="card kpi"><span class="l">Vouched back</span><span class="v">2</span><span class="d muted">people who vouched for you</span></div>
+  </div>
+  <div class="card"><h2>Entries</h2><div style="margin-top:6px">${S.voucherLedger.map(e=>ledgerEntry(e)).join('')}</div></div>`;
+}
+function vHow(){
+  return `
+  <div class="page-head"><div><div class="eyebrow">Mechanics</div><h1>How vouching works</h1><p>The ledger is only as good as the people signing it. So the system is built around who they are, what exactly they confirm, and what it costs them to be wrong.</p></div></div>
+  <div class="grid g3">
+    <div class="card"><div class="eyebrow">1 · Identity first</div><h3 style="margin-top:6px">Prove who you are before you sign</h3><p class="small muted" style="margin-top:6px">LinkedIn sign-in proves the profile exists and how old it is. A work email at the employer named in the claim proves you were there. A government ID check (optional) proves you are one person. Each step raises the tier and the weight.</p><div class="row" style="gap:6px;margin-top:10px"><span class="vb li">in</span><span class="vb em">@</span><span class="vb id">ID</span></div></div>
+    <div class="card"><div class="eyebrow">2 · One claim, not a person</div><h3 style="margin-top:6px">Confirm something specific you saw</h3><p class="small muted" style="margin-top:6px">A vouch is attached to a single resume line. "Shipped the mobile app 0→1", not "great to work with". You can edit the wording, mark it secondhand, or decline privately. Two independent vouches take a claim to full weight.</p></div>
+    <div class="card"><div class="eyebrow">3 · Skin in the game</div><h3 style="margin-top:6px">Your signature is on your record too</h3><p class="small muted" style="margin-top:6px">Every vouch is public on both ledgers. If a claim you signed is contested and fails review, your standing drops and every vouch you gave weighs less. Careful vouchers gain standing and become the people others want a vouch from.</p></div>
+  </div>
+  <div class="split">
+    <div class="card"><h3>Who can vouch for what</h3><div class="tbl-wrap"><table class="tbl" style="margin-top:6px"><thead><tr><th>Relationship</th><th>Weight</th><th>Needs</th></tr></thead><tbody>
+      <tr><td>Manager or client</td><td>×1.0</td><td>Work email at that employer, or invoice hash</td></tr>
+      <tr><td>Peer / cross-functional</td><td>×0.8</td><td>Overlapping employment on LinkedIn</td></tr>
+      <tr><td>Report</td><td>×0.6</td><td>Overlapping employment on LinkedIn</td></tr>
+      <tr><td>Company (after paid task)</td><td>×0.7</td><td>Verified org, completed and paid</td></tr>
+      <tr><td>Self</td><td>×0.2</td><td>Document hash only, shown as self-attested</td></tr>
+    </tbody></table></div></div>
+    <div class="card"><h3>Why companies' attestations stay secondary</h3><p class="small muted" style="margin-top:6px">A company that paid a tester has an interest in saying nice things. So a paid-task attestation confirms the task happened and was paid, and the specific skill the company observed. It never vouches for a resume claim. That stays with people who were there and have nothing to sell.</p><div class="note" style="margin-top:10px">${I.shield} On Alex's ledger today: external vouches account for the largest share of strength. Paid tasks and company attestations together are smaller. That ratio is a design goal, not an accident.</div></div>
   </div>`;
 }
 function vResume(){
@@ -795,8 +1010,10 @@ function vPublic(){
       <div style="margin-top:8px">${sorted.map(e=>publicEntry(e)).join('')}</div>
     </div>
     <div class="stack" style="gap:18px">
-      <div class="card"><h3>How to read this</h3><ul class="small" style="margin:8px 0 0;padding-left:16px;color:var(--ink-2);line-height:1.8"><li><b>Resume claim</b>: a statement Alex made, confirmed by named people who were there.</li><li><b>Skill attestation</b>: issued by a person or company after observing the work.</li><li><b>Paid task</b>: a company confirmed Alex completed a real task and paid for it.</li><li>Every entry has a transaction you can open on any Base explorer.</li></ul></div>
-      <div class="card"><h3>Who vouched</h3><div class="stack small" style="margin-top:8px">${[['Priya Natarajan','Head of Design, Loom','strength 84'],['Daniel Okafor','Staff Designer, Loom','strength 79'],['Relay Analytics','Company · 27 issued','verified org'],['Maya Thompson','Eng lead, Cadence Health','pending']].map(v=>`<div class="row between"><div><b>${v[0]}</b><div class="muted">${v[1]}</div></div><span class="mini">${v[2]}</span></div>`).join('')}</div></div>
+      <div class="card"><h3>How to read this</h3><ul class="small" style="margin:8px 0 0;padding-left:16px;color:var(--ink-2);line-height:1.8"><li><b>Resume claim</b>: a statement Alex made, confirmed by named, identity-verified people who were there. Badges show what was verified: <span class="vb li">in</span> LinkedIn, <span class="vb em">@</span> work email at that employer, <span class="vb id">ID</span> government ID.</li><li><b>Skill attestation</b>: issued by a person or company after observing the work.</li><li><b>Paid task</b>: a company confirmed Alex completed a real task and paid for it.</li><li>Every entry has a transaction you can open on any Base explorer.</li></ul></div>
+      <div class="card"><h3>Who vouched</h3><p class="small muted" style="margin-top:2px">Identity-verified people who were there. Click a badge to see what was verified.</p><div class="stack" style="margin-top:8px;gap:10px">${Object.values(S.vouchers).filter(v=>S.ledger.some(e=>(e.vouchedBy||[]).includes(v.id)||e.attester===v.id||(e.pendingFrom||[]).includes(v.id))).sort((a,b)=>b.standing-a.standing).map(v=>{const pend=!S.ledger.some(e=>(e.vouchedBy||[]).includes(v.id)||e.attester===v.id);return `<div class="row between" style="${pend?'opacity:.6':''}"><div class="row" style="gap:8px"><div class="avatar">${initials(v.name)}</div><div><b class="small">${v.name}</b><div class="small muted">${v.title} · ${v.rel.toLowerCase()}</div><div class="row" style="gap:6px;margin-top:2px">${idBadges(v,true)}</div></div></div><span class="mini">${pend?'pending':'standing '+v.standing}</span></div>`}).join('')}
+        <div class="row between"><div class="row" style="gap:8px">${logo('relay')}<div><b class="small">Relay Analytics</b><div class="small muted">Company · attests paid tasks and observed skills only</div></div></div><span class="mini">verified org</span></div></div></div>
+      <div class="card"><h3>Strength by source</h3>${breakdown()}<p class="small muted" style="margin-top:8px">Paid-task attestations from companies never vouch for resume claims. Those come only from people.</p></div>
       <div class="card"><h3>Got a stamped resume?</h3><p class="small muted" style="margin-top:4px">Paste the code from the footer to confirm the PDF you have is the one that was stamped.</p><button class="btn sm" style="margin-top:8px" data-view="stamp">Check a stamp ${I.arrow}</button></div>
     </div>
   </div>`;
@@ -805,6 +1022,7 @@ function publicEntry(e){
   const log=S.verifyLog[e.id];
   return `<div class="entry"><div class="ic ${e.kind}">${KIND_ICON[e.kind]||I.shield}</div>
     <div><div class="t">${e.title}</div><div class="m">${KIND_LABEL[e.kind]} · ${e.by}</div>
+    ${vouchChips(e)?`<div class="row" style="gap:5px;margin-top:6px">${vouchChips(e)}</div>`:''}
     <div class="proof">${pillStatus(e.status)}<span class="hash" title="${e.tx}">tx ${shortHash(e.tx)}</span><span class="small muted">block ${e.block.toLocaleString()}</span></div>
     ${log?`<div class="chainlog" style="margin-top:8px;min-height:0">${log}</div>`:''}</div>
     <div class="stack" style="align-items:flex-end;gap:6px"><span class="small muted num">${fmtDate(e.date)}</span><button class="btn sm" data-verify="${e.id}">${I.chain} Verify</button></div></div>`;
@@ -838,7 +1056,7 @@ function vFlywheel(){
       <svg class="flywheel" viewBox="0 0 560 520" role="img" aria-label="Flywheel: candidates join, complete paid tests, earn payouts and attestations, ledgers strengthen, matching improves, more companies pay">
         <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5 0 10z" fill="var(--muted)"/></marker></defs>
         <circle cx="280" cy="260" r="150" fill="none" stroke="var(--line-2)" stroke-width="2" stroke-dasharray="4 6"/>
-        ${[[280,90,'Candidates join','to earn while searching','var(--accent-soft)','var(--accent-ink)'],[440,180,'Companies pay','$99–$899/mo for seats','var(--info-soft)','var(--info)'],[440,340,'Testers do tasks','sign-ups, UX, interviews, data','var(--info-soft)','var(--info)'],[280,430,'Payouts + attestations','80% to tester, entry minted','var(--seal-soft)','var(--seal)'],[120,340,'Ledgers strengthen','verified, portable, open','var(--accent-soft)','var(--accent-ink)'],[120,180,'Matching improves','better testers → more value','var(--accent-soft)','var(--accent-ink)']].map(([x,y,t,s,bg,fg])=>`<g><rect x="${x-78}" y="${y-30}" width="156" height="60" rx="12" fill="${bg}"/><text x="${x}" y="${y-5}" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="700" font-size="14" fill="${fg}">${t}</text><text x="${x}" y="${y+14}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--muted)">${s}</text></g>`).join('')}
+        ${[[280,90,'Candidates join','to earn while searching','var(--accent-soft)','var(--accent-ink)'],[440,180,'Companies pay','$99–$899/mo for seats','var(--info-soft)','var(--info)'],[440,340,'Testers do tasks','sign-ups, UX, interviews, data','var(--info-soft)','var(--info)'],[280,430,'Payouts + attestations','80% to tester, entry minted','var(--seal-soft)','var(--seal)'],[120,340,'Verified people vouch','claims confirmed by outsiders','var(--seal-soft)','var(--seal)'],[120,180,'Ledgers strengthen','matching improves','var(--accent-soft)','var(--accent-ink)']].map(([x,y,t,s,bg,fg])=>`<g><rect x="${x-78}" y="${y-30}" width="156" height="60" rx="12" fill="${bg}"/><text x="${x}" y="${y-5}" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="700" font-size="14" fill="${fg}">${t}</text><text x="${x}" y="${y+14}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--muted)">${s}</text></g>`).join('')}
         ${[[358,100,400,148],[440,212,440,308],[400,372,358,420],[202,420,160,372],[120,308,120,212],[160,148,202,100]].map(([x1,y1,x2,y2])=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah)"/>`).join('')}
         <text x="280" y="255" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="20" fill="var(--ink)">Vouch Ledger</text>
         <text x="280" y="275" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--muted)">brokers · escrows · attests · takes 20%</text>
@@ -849,10 +1067,11 @@ function vFlywheel(){
         <tr><td>Company → Vouch</td><td class="r">Plan fee, monthly</td></tr>
         <tr><td>Company → Vouch → Tester</td><td class="r">Payout, 80% passed through</td></tr>
         <tr><td>Vouch keeps</td><td class="r">Plan + 20% of payouts</td></tr>
+        <tr><td>Voucher</td><td class="r"><b>$0</b>, earns standing</td></tr>
         <tr><td>Hiring manager</td><td class="r"><b>$0</b></td></tr>
         <tr><td>Candidate</td><td class="r"><b>$0</b>, earns</td></tr>
       </tbody></table></div></div>
-      <div class="card"><h3>Why this beats the original model</h3><ul class="small" style="margin:8px 0 0;padding-left:16px;color:var(--ink-2);line-height:1.8"><li>Revenue starts with the first startup, not after employers adopt a new habit.</li><li>Candidates have a reason to show up daily even before a vouch arrives.</li><li>Every paid task is a third-party-confirmed ledger entry, so the verification product gets built as a side effect.</li><li>Startups get something they already budget for: users, feedback, and data.</li></ul></div>
+      <div class="card"><h3>Why this beats the original model</h3><ul class="small" style="margin:8px 0 0;padding-left:16px;color:var(--ink-2);line-height:1.8"><li>Revenue starts with the first startup, not after employers adopt a new habit.</li><li>Candidates have a reason to show up daily even before a vouch arrives.</li><li>Paid tasks give candidates a reason to be here daily, and that traffic is what gets vouch requests sent and answered. The external vouches remain the core asset.</li><li>Vouchers build their own record by vouching, so the verifying population grows itself.</li><li>Startups get something they already budget for: users, feedback, and data.</li></ul></div>
       <div class="card"><h3>Kitchen-sink offshoots (later)</h3><div class="chips" style="margin-top:8px">${['Referral bounties','Cohort betas','Skill screens as tests','Recruiter search over ledgers','Attestation API','Tester leagues','Founder office hours'].map(x=>`<span class="chip">${x}</span>`).join('')}</div></div>
     </div>
   </div>`;
@@ -993,11 +1212,11 @@ function launchCampaign(){
    EVENTS
    ============================================================ */
 document.addEventListener('click',(e)=>{
-  const b=e.target.closest('[data-role],[data-view],[data-go],[data-accept],[data-step],[data-filter],[data-copy],[data-stamp],[data-export],[data-askvouch],[data-nudge],[data-mklink],[data-toast],[data-newcamp],[data-camp-step],[data-camp-launch],[data-launch],[data-results],[data-closeresults],[data-invite],[data-plan],[data-verify],[data-checkstamp],[data-mintdone],[data-close]');
+  const b=e.target.closest('[data-role],[data-view],[data-go],[data-accept],[data-step],[data-filter],[data-copy],[data-stamp],[data-export],[data-askvouch],[data-nudge],[data-mklink],[data-toast],[data-newcamp],[data-camp-step],[data-camp-launch],[data-launch],[data-results],[data-closeresults],[data-invite],[data-plan],[data-verify],[data-checkstamp],[data-mintdone],[data-close],[data-openvouch],[data-signvouch],[data-decline],[data-sendreq]');
   if(!b)return;
   const d=b.dataset;
-  if(d.role){set(s=>{s.role=d.role;});window.scrollTo({top:0});}
-  else if(d.go){set(s=>{s.role=d.go;if(d.goview){if(d.go==='verify')s.vView=d.goview;}});window.scrollTo({top:0});}
+  if(d.role){closeModal();set(s=>{s.role=d.role;});window.scrollTo({top:0});}
+  else if(d.go){closeModal();set(s=>{s.role=d.go;if(d.goview){if(d.go==='verify')s.vView=d.goview;if(d.go==='candidate')s.cView=d.goview;}});window.scrollTo({top:0});}
   else if(d.view){setView(d.view);}
   else if(d.accept){acceptOpp(d.accept);}
   else if(d.step){const [id,i]=d.step.split(':');stepDone(id,Number(i));}
@@ -1020,14 +1239,19 @@ document.addEventListener('click',(e)=>{
   else if(d.verify){verifyEntry(d.verify);}
   else if(d.checkstamp){checkStamp();}
   else if(d.mintdone){closeModal();set(s=>{s.cView='ledger';});setTimeout(()=>{const el=document.querySelector('.entry.new');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},60);}
+  else if(d.openvouch){vouchModal(d.openvouch);}
+  else if(d.signvouch){signVouch(d.signvouch);}
+  else if(d.decline){set(s=>{s.requests.find(x=>x.id===d.decline).status='declined';});toast('Recorded privately. The requester sees "could not confirm" and nothing else.');}
+  else if(d.sendreq){const dr=S.reqDraft||{claim:'a8',who:'jules',rel:'Former client'};const c=S.ledger.find(e=>e.id===dr.claim);const v=S.vouchers[dr.who];set(s=>{s.requests.unshift({id:uid(),to:dr.who,from:'Alex Rivera',fromHandle:'alex-rivera',fromTitle:'Senior Product Designer',claimId:c.id,claim:c.title,context:'',rel:dr.rel.replace('Former ',''),status:'pending',sent:today.toISOString(),others:(c.vouches||0)?`${c.vouches} vouch already on this claim`:'No other vouches yet'});const e=s.ledger.find(x=>x.id===c.id);if(e&&!(e.vouchedBy||[]).includes(dr.who))e.pendingFrom=[...(e.pendingFrom||[]),dr.who];s.reqDraft=null;});toast(`Request sent to ${v.name}. ${dr.who==='maya'?'Switch to the Voucher view to answer it as Maya.':'They verify identity, then confirm or decline.'}`);}
   else if(d.close){closeModal();}
 });
+document.addEventListener('change',(e)=>{const t=e.target;if(t.dataset&&t.dataset.rq){S.reqDraft=Object.assign({claim:'a8',who:'jules',rel:'Former client'},S.reqDraft||{});S.reqDraft[t.dataset.rq]=t.value;save();render();}});
 document.addEventListener('input',(e)=>{const t=e.target;if(t.dataset&&t.dataset.model){S.model=Object.assign({starter:20,growth:10,scale:2,tasks:14,avgPay:80},S.model||{});S.model[t.dataset.model]=Number(t.value);save();const active=document.activeElement;const id=active&&active.id;render();if(id){const n=document.getElementById(id);if(n)n.focus();}}});
 document.addEventListener('keydown',(e)=>{if(e.key==='Escape')closeModal();if(e.key==='Enter'&&e.target.id==='stampInput')checkStamp();});
 document.getElementById('resetBtn').addEventListener('click',()=>{try{localStorage.removeItem(KEY);}catch(_){}const role=S.role;S=seed();S.role=role;save();render();toast('Demo data reset');});
 
 /* hash → initial view */
-(function(){const h=location.hash.replace('#','');if(!h)return;if(h==='overview'){S.role='home';return;}const [r,v]=h.split('-');if(RAILS[r]){S.role=r;if(v&&RAILS[r].some(x=>x[0]===v)){if(r==='candidate')S.cView=v;else if(r==='company')S.coView=v;else if(r==='verify')S.vView=v;else S.mView=v;}}})();
+(function(){const h=location.hash.replace('#','');if(!h)return;if(h==='overview'){S.role='home';return;}const [r,v]=h.split('-');if(RAILS[r]){S.role=r;if(v&&RAILS[r].some(x=>x[0]===v)){if(r==='candidate')S.cView=v;else if(r==='voucher')S.vView2=v;else if(r==='company')S.coView=v;else if(r==='verify')S.vView=v;else S.mView=v;}}})();
 render();
 </script>
 </body>
