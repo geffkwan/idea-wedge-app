@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Vouch Ledger</title>
+<meta name="description" content="Vouch Ledger prototype: a portable, verified career ledger plus a paid product-testing marketplace that funds it." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --ground:#F4F6F2;--surface:#FFFFFF;--surface-2:#EDF1EA;--surface-3:#E3E9E0;
+  --ink:#121D2A;--ink-2:#3B4A57;--muted:#66747F;--line:#D5DDD4;--line-2:#C2CDC1;
+  --accent:#176B4B;--accent-strong:#0F5238;--accent-soft:#DCEFE3;--accent-ink:#0B3D2A;
+  --seal:#B4432B;--seal-soft:#F6E3DD;
+  --good:#1F7A48;--good-soft:#DFF3E6;--warn:#9A6A00;--warn-soft:#FBF0CC;--bad:#A83232;--bad-soft:#F9E0E0;--info:#2F5BA8;--info-soft:#E0E9F8;
+  --chain:#2C3E50;
+  --shadow:0 10px 30px rgba(18,29,42,.08),0 1px 2px rgba(18,29,42,.06);
+  --r:14px;--r-sm:9px;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#0F1512;--surface:#171F1B;--surface-2:#1E2924;--surface-3:#26332D;
+    --ink:#E8EDE8;--ink-2:#B9C4BC;--muted:#8A978F;--line:#2B3731;--line-2:#3A4841;
+    --accent:#4CBF8B;--accent-strong:#6DD3A3;--accent-soft:#183A2C;--accent-ink:#BFEBD3;
+    --seal:#E0725A;--seal-soft:#3A2420;
+    --good:#5BCB8E;--good-soft:#173B29;--warn:#E4B740;--warn-soft:#3A3116;--bad:#E67373;--bad-soft:#3E1F1F;--info:#7FA6EA;--info-soft:#1C2A44;
+    --chain:#AEBBC7;
+    --shadow:0 10px 30px rgba(0,0,0,.35),0 1px 2px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#0F1512;--surface:#171F1B;--surface-2:#1E2924;--surface-3:#26332D;
+  --ink:#E8EDE8;--ink-2:#B9C4BC;--muted:#8A978F;--line:#2B3731;--line-2:#3A4841;
+  --accent:#4CBF8B;--accent-strong:#6DD3A3;--accent-soft:#183A2C;--accent-ink:#BFEBD3;
+  --seal:#E0725A;--seal-soft:#3A2420;
+  --good:#5BCB8E;--good-soft:#173B29;--warn:#E4B740;--warn-soft:#3A3116;--bad:#E67373;--bad-soft:#3E1F1F;--info:#7FA6EA;--info-soft:#1C2A44;
+  --chain:#AEBBC7;
+  --shadow:0 10px 30px rgba(0,0,0,.35),0 1px 2px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:14.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--accent);text-decoration:none}
+h1,h2,h3,h4{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(26px,3.2vw,36px);font-weight:800;line-height:1.1}
+h2{font-size:20px;font-weight:700}
+h3{font-size:16px;font-weight:700}
+p{margin:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:12.5px}
+.eyebrow{font-family:var(--display);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+[hidden]{display:none!important}
+svg.i{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:inline-block;vertical-align:-3px}
+
+/* ---------- shell ---------- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--ground) 86%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1280px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:18px;letter-spacing:-.02em}
+.brand .mark{width:30px;height:30px}
+.brand .tag{font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:2px 8px;letter-spacing:.04em}
+.roles{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:3px;margin-left:auto}
+.roles button{border:0;background:transparent;border-radius:999px;padding:6px 13px;font-weight:600;font-size:13px;color:var(--ink-2)}
+.roles button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.roles button:focus-visible,.btn:focus-visible,.rail button:focus-visible,.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.top-actions{display:flex;gap:8px;align-items:center}
+.who{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2)}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:12px;border:1px solid var(--line)}
+.avatar.co{background:var(--info-soft);color:var(--info)}
+.layout{max-width:1280px;margin:0 auto;padding:18px 16px 48px;display:grid;grid-template-columns:212px minmax(0,1fr);gap:22px}
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 66px);align-self:start;display:flex;flex-direction:column;gap:2px}
+.rail button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:transparent;padding:9px 11px;border-radius:10px;color:var(--ink-2);font-weight:500}
+.rail button:hover{background:var(--surface-2)}
+.rail button.on{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.06);border:1px solid var(--line)}
+.rail .cnt{margin-left:auto;font-family:var(--mono);font-size:11px;background:var(--surface-3);border-radius:999px;padding:1px 7px;color:var(--ink-2)}
+.rail .sep{height:1px;background:var(--line);margin:8px 6px}
+.rail-note{padding:10px 11px;font-size:12px;color:var(--muted);line-height:1.45}
+main{min-width:0;display:flex;flex-direction:column;gap:18px}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.page-head p{max-width:62ch;color:var(--ink-2);margin-top:6px}
+@media (max-width: 860px){
+  .layout{grid-template-columns:1fr;gap:14px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:4px;scrollbar-width:none}
+  .rail button{white-space:nowrap;width:auto;border:1px solid var(--line);background:var(--surface-2)}
+  .rail .sep,.rail-note{display:none}
+  .roles{margin-left:0;width:100%;justify-content:space-between}
+  .roles button{flex:1;padding:6px 6px;font-size:12.5px}
+  .who .name{display:none}
+  .page-head .kpi{align-items:flex-start!important;text-align:left!important}
+}
+
+/* ---------- primitives ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.card.flat{box-shadow:none}
+.card.tight{padding:14px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.split{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:1000px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.split{grid-template-columns:1fr}}
+@media (max-width:600px){.g3,.g2,.g4{grid-template-columns:1fr}}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.between{justify-content:space-between}
+.stack{display:flex;flex-direction:column;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);border-radius:10px;padding:8px 13px;font-weight:600;font-size:13.5px;line-height:1.2;transition:transform .08s ease,background .15s}
+.btn:hover{background:var(--surface-2)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:var(--accent-strong)}
+:root[data-theme="dark"] .btn.primary,:root:not([data-theme="light"]) .btn.primary{color:#07130D}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .btn.primary{color:#fff}}
+:root[data-theme="light"] .btn.primary{color:#fff}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--surface-2)}
+.btn.sm{padding:5px 10px;font-size:12.5px;border-radius:8px}
+.btn.seal{background:var(--seal);border-color:var(--seal);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:600;letter-spacing:.01em;line-height:1.6;white-space:nowrap}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.info{background:var(--info-soft);color:var(--info)}
+.pill.neutral{background:var(--surface-3);color:var(--ink-2)}
+.pill.accent{background:var(--accent-soft);color:var(--accent-ink)}
+.pill.seal{background:var(--seal-soft);color:var(--seal)}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:500;color:var(--ink-2)}
+.chip.on{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.kpi{display:flex;flex-direction:column;gap:4px}
+.kpi .v{font-family:var(--display);font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12.5px;color:var(--muted)}
+.kpi .d{font-size:12px;color:var(--good);font-weight:600}
+.bar{height:6px;background:var(--surface-3);border-radius:999px;overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .5s ease}
+.bar.seal > i{background:var(--seal)}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line)}
+.tbl td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .r{text-align:right;font-variant-numeric:tabular-nums}
+.tbl-wrap{overflow-x:auto}
+.hash{font-family:var(--mono);font-size:12px;color:var(--chain);background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;white-space:nowrap}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:12.5px;font-weight:600;color:var(--ink-2)}
+.field input,.field select,.field textarea{border:1px solid var(--line-2);background:var(--surface);border-radius:9px;padding:9px 11px;font-size:14px;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.field .hint{font-size:12px;color:var(--muted)}
+.note{background:var(--surface-2);border:1px dashed var(--line-2);border-radius:var(--r-sm);padding:10px 12px;font-size:13px;color:var(--ink-2)}
+.divider{height:1px;background:var(--line);margin:4px 0}
+.toast-wrap{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:60;width:min(92vw,420px)}
+.toast{background:var(--ink);color:var(--ground);padding:11px 14px;border-radius:12px;font-size:13.5px;font-weight:500;box-shadow:var(--shadow);display:flex;gap:10px;align-items:center;animation:pop .25s ease}
+.toast .sealmini{width:20px;height:20px;flex:none}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.modal-bg{position:fixed;inset:0;background:rgba(9,15,12,.5);display:grid;place-items:center;z-index:50;padding:16px;backdrop-filter:blur(4px)}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:18px;width:min(720px,100%);max-height:min(90vh,860px);overflow:auto;box-shadow:var(--shadow);padding:22px;animation:pop .2s ease}
+.modal.narrow{width:min(520px,100%)}
+.steps{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.steps b{color:var(--ink);font-weight:600}
+.steps .s{display:flex;align-items:center;gap:6px}
+.steps .n{width:20px;height:20px;border-radius:50%;background:var(--surface-3);display:grid;place-items:center;font-family:var(--mono);font-size:11px;color:var(--ink-2)}
+.steps .s.done .n,.steps .s.cur .n{background:var(--accent);color:#fff}
+
+/* ---------- ledger entries ---------- */
+.entry{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);align-items:start}
+.entry:last-child{border-bottom:0}
+.entry .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:var(--surface-2);color:var(--ink-2)}
+.entry .ic.skill{background:var(--accent-soft);color:var(--accent-ink)}
+.entry .ic.task{background:var(--info-soft);color:var(--info)}
+.entry .ic.claim{background:var(--seal-soft);color:var(--seal)}
+.entry .ic.endorse{background:var(--warn-soft);color:var(--warn)}
+.entry .t{font-weight:600}
+.entry .m{font-size:12.5px;color:var(--muted);margin-top:2px}
+.entry .proof{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.entry.new{animation:glow 1.6s ease}
+@keyframes glow{0%{background:var(--accent-soft)}100%{background:transparent}}
+.strength{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.ring{width:96px;height:96px;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .v{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.03em}
+.ring .v small{font-size:8.5px;color:var(--muted);font-weight:600;font-family:var(--body);display:block;text-align:center;letter-spacing:.04em}
+.opp{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:start}
+.opp .pay{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.02em;text-align:right;line-height:1}
+.opp .pay small{display:block;font-family:var(--body);font-size:11.5px;color:var(--muted);font-weight:500;margin-top:3px}
+.opp .meta{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:6px}
+.opp .meta span{display:inline-flex;align-items:center;gap:5px}
+.opp .issues{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
+.logo{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:14px;color:#fff;flex:none}
+.tasklist{display:flex;flex-direction:column;gap:6px}
+.task{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--surface);flex-wrap:wrap}
+.task .btn{white-space:nowrap}
+.task.done{background:var(--surface-2);color:var(--muted);text-decoration:line-through}
+.task .cb{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line-2);display:grid;place-items:center;flex:none}
+.task.done .cb{background:var(--accent);border-color:var(--accent);color:#fff;text-decoration:none}
+.task .btn{margin-left:auto}
+.seal{width:120px;height:120px}
+.seal-wrap{display:grid;place-items:center;padding:8px}
+@keyframes stamp{0%{transform:scale(1.8) rotate(-18deg);opacity:0}60%{transform:scale(.96) rotate(-8deg);opacity:1}80%{transform:scale(1.03) rotate(-8deg)}100%{transform:scale(1) rotate(-8deg)}}
+.seal.stamp{animation:stamp .55s cubic-bezier(.2,.8,.2,1) both}
+.chainlog{font-family:var(--mono);font-size:12px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--ink-2);line-height:1.7;min-height:118px}
+.chainlog .ok{color:var(--good)}
+.resume{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px 24px;position:relative;font-size:12.5px;line-height:1.5;color:var(--ink-2);overflow:hidden;min-height:340px}
+.resume h4{font-family:var(--display);font-size:18px;color:var(--ink);margin:0}
+.resume .l{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 4px;font-weight:600}
+.resume .claim{padding:5px 8px;border-radius:6px;margin:2px -8px;display:flex;gap:8px;align-items:flex-start;cursor:pointer;border:1px solid transparent}
+.resume .claim:hover{background:var(--surface-2)}
+.resume .claim.v{border-color:var(--good-soft)}
+.resume .claim .st{flex:none;margin-top:2px}
+.resume .stampmark{position:absolute;right:16px;top:16px;width:104px;height:104px;opacity:0;pointer-events:none}
+.resume.stamped .stampmark{opacity:1;animation:stamp .55s cubic-bezier(.2,.8,.2,1) both}
+.resume .foot{margin-top:18px;padding-top:10px;border-top:1px dashed var(--line-2);font-family:var(--mono);font-size:10.5px;color:var(--muted);display:none;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.resume.stamped .foot{display:flex}
+.qr{width:44px;height:44px;flex:none}
+.linkbox{display:flex;gap:8px;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:8px 8px 8px 12px;font-family:var(--mono);font-size:12.5px;overflow:hidden}
+.linkbox span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.pool{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.pool:last-child{border-bottom:0}
+.pool .badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+.mini{font-size:11px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--ink-2)}
+.funnel{display:grid;gap:8px}
+.funnel .f{display:grid;grid-template-columns:150px 1fr 48px;gap:10px;align-items:center;font-size:13px}
+.funnel .f .b{height:18px;border-radius:5px;background:var(--accent-soft);position:relative;overflow:hidden}
+.funnel .f .b i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:5px}
+.quote{border-left:3px solid var(--line-2);padding:4px 12px;font-size:13.5px;color:var(--ink-2)}
+.quote .by{font-size:12px;color:var(--muted);margin-top:4px}
+.plan{border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:10px;position:relative}
+.plan.cur{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.plan .price{font-family:var(--display);font-size:30px;font-weight:800;letter-spacing:-.03em}
+.plan .price small{font-family:var(--body);font-size:12.5px;color:var(--muted);font-weight:500}
+.plan ul{margin:0;padding-left:18px;font-size:13px;color:var(--ink-2);display:flex;flex-direction:column;gap:4px}
+.plan .cur-tag{position:absolute;top:-10px;left:14px;background:var(--accent);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:2px 8px}
+.verify-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center}
+.verify-head .avatar{width:56px;height:56px;font-size:20px}
+.pub-note{background:var(--accent-ink);color:#fff;border-radius:var(--r);padding:12px 16px;font-size:13px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+:root[data-theme="dark"] .pub-note{background:var(--accent-soft);color:var(--accent-ink)}
+.proofbox{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px;font-family:var(--mono);font-size:12px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;color:var(--ink-2);overflow-x:auto}
+.proofbox b{color:var(--muted);font-weight:500}
+.flywheel{width:100%;max-width:560px;margin:0 auto;display:block}
+.range{width:100%}
+.big{font-family:var(--display);font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.marketing{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:22px;align-items:center}
+@media (max-width:900px){.marketing{grid-template-columns:1fr}}
+.hero h1{font-size:clamp(30px,4.4vw,48px);line-height:1.02}
+.hero p.lead{font-size:16.5px;color:var(--ink-2);max-width:56ch;margin-top:12px}
+.ticker{display:flex;flex-direction:column;gap:8px}
+.tick{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:13px}
+.tick .who{font-weight:600}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+.footer{max-width:1280px;margin:0 auto;padding:0 16px 32px;font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <path id="sealpath" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"/>
+  </defs>
+</svg>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="2" width="28" height="28" rx="8" fill="var(--accent)"/><path d="M9 16.5l4.5 4.5L23 11" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Vouch Ledger <span class="tag">PROTOTYPE</span>
+    </div>
+    <div class="roles" role="tablist" aria-label="Choose a perspective">
+      <button data-role="home" role="tab">Overview</button>
+      <button data-role="candidate" role="tab">Candidate</button>
+      <button data-role="company" role="tab">Company</button>
+      <button data-role="verify" role="tab">Verify</button>
+      <button data-role="model" role="tab">Model</button>
+    </div>
+    <div class="top-actions">
+      <div class="who" id="who"></div>
+      <button class="btn sm ghost" id="resetBtn" title="Reset demo data">Reset demo</button>
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="layout">
+  <nav class="rail" id="rail" aria-label="Section"></nav>
+  <main id="main"></main>
+</div>
+<div class="footer"><span>Vouch Ledger · interactive prototype · all people, companies and chain data are fictional</span><span>Candidate keeps 80% of every payout · platform fee 20% · plans from $99/mo</span></div>
+<div class="toast-wrap" id="toasts"></div>
+<div id="modalRoot"></div>
+
+<script>
+/* ============================================================
+   Vouch Ledger prototype — single-file, in-memory state with
+   optional localStorage persistence. Everything here is fictional.
+   ============================================================ */
+const KEY='vouch-ledger-proto-v3';
+const uid=()=>Math.random().toString(36).slice(2,9);
+const hex=(n)=>Array.from({length:n},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
+const shortHash=(h)=>h.slice(0,6)+'…'+h.slice(-4);
+const money=(n)=>'$'+Number(n).toLocaleString('en-US',{maximumFractionDigits:0});
+const today=new Date('2026-09-26T09:00:00');
+const fmtDate=(iso)=>new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+const daysAgo=(d)=>new Date(today.getTime()-d*864e5).toISOString();
+
+const COMPANIES={
+  relay:{name:'Relay Analytics',color:'#2F5BA8',stage:'Seed · analytics for ops teams',initial:'R'},
+  fathom:{name:'Fathom Notes',color:'#7A3E9D',stage:'Pre-seed · AI meeting notes',initial:'F'},
+  quill:{name:'Quill CRM',color:'#B4432B',stage:'Series A · CRM for agencies',initial:'Q'},
+  lattice:{name:'Lattice Labs',color:'#176B4B',stage:'Seed · UI understanding models',initial:'L'},
+  northwind:{name:'Northwind Payroll',color:'#8A6D1F',stage:'Series A · payroll for SMB',initial:'N'},
+  brightline:{name:'Brightline',color:'#1F7A7A',stage:'Pre-seed · job search CRM',initial:'B'},
+};
+
+function seed(){
+  return {
+    role:'home', cView:'dashboard', coView:'dashboard', vView:'profile', mView:'flywheel',
+    oppFilter:'all',
+    candidate:{name:'Alex Rivera',title:'Senior Product Designer',loc:'Austin, TX',handle:'alex-rivera',did:'did:vouch:0x8f3a19c4e2b7d0a6f15c21e',joined:daysAgo(212)},
+    ledger:[
+      {id:'a1',kind:'claim',title:'Led checkout redesign that lifted activation 18% at Loom',by:'Vouched by Priya Natarajan (manager) and Daniel Okafor (peer)',date:daysAgo(160),tx:'0x7c1f0a9e3b2d4c5f6a7b8c9d0e1f2a3b4c5d6e7f8091a2b3c4d5e6f708192a3b',block:18391204,status:'verified',weight:14,vouches:2},
+      {id:'a2',kind:'skill',title:'Figma prototyping · advanced',by:'Attested by Priya Natarajan, Head of Design, Loom',date:daysAgo(158),tx:'0x91be2c7d4e5f60718293a4b5c6d7e8f9011223344556677889900aabbccddeef',block:18391877,status:'verified',weight:10},
+      {id:'a3',kind:'endorse',title:'Design systems',by:'Endorsed by Daniel Okafor, Staff Designer, Loom',date:daysAgo(151),tx:'0x3a4b5c6d7e8f9011223344556677889900aabbccddeeff00112233445566778',block:18402210,status:'verified',weight:6},
+      {id:'a4',kind:'task',title:'Import workflow usability test · 30 min',by:'Completed for Quill CRM · paid $60',date:daysAgo(74),tx:'0x5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c',block:18866321,status:'verified',weight:8,payout:60,company:'quill'},
+      {id:'a5',kind:'task',title:'Labeled 200 UI screenshots for training data',by:'Completed for Lattice Labs · paid $150 · accuracy 97%',date:daysAgo(61),tx:'0xa2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091',block:18942018,status:'verified',weight:9,payout:150,company:'lattice'},
+      {id:'a6',kind:'skill',title:'User research synthesis',by:'Attested by Relay Analytics after onboarding walkthrough + interview',date:daysAgo(55),tx:'0xc4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3',block:18977450,status:'verified',weight:9},
+      {id:'a7',kind:'task',title:'Onboarding walkthrough + 20-min interview',by:'Completed for Relay Analytics · paid $120',date:daysAgo(55),tx:'0xe6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5',block:18977452,status:'verified',weight:8,payout:120,company:'relay'},
+      {id:'a8',kind:'claim',title:'Shipped Cadence Health mobile app 0→1 (iOS + Android)',by:'1 of 2 vouches received · Maya Thompson (Eng lead) pending',date:daysAgo(20),tx:'0x0819a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f',block:19218830,status:'pending',weight:4,vouches:1},
+      {id:'a9',kind:'credential',title:'NN/g UX Certification',by:'Self-attested · certificate document hash anchored',date:daysAgo(12),tx:'0x2a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f70819',block:19275112,status:'verified',weight:3},
+    ],
+    opps:[
+      {id:'o1',company:'relay',title:'Onboarding walkthrough + 20-min feedback interview',type:'UX walkthrough + interview',pay:120,time:'45 min',seats:6,total:20,issues:['Task attestation','Skill: product feedback'],needs:['Product design','B2B SaaS'],match:94,desc:'Set up a workspace from a blank account, connect a sample data source, and build one dashboard. Then a 20-minute call with our PM.',steps:['Create account with your Vouch invite link','Connect the sample data source','Build one dashboard and share it','Complete the 20-minute interview'],state:'open'},
+      {id:'o2',company:'fathom',title:'7-day beta usage with daily check-in',type:'Beta usage + feedback',pay:85,time:'7 days · ~10 min/day',seats:12,total:25,issues:['Task attestation','Endorsement: written feedback'],needs:['Knowledge work','Meetings weekly'],match:88,desc:'Use Fathom for your real meetings for a week. Answer a 3-question check-in each day. Includes 3 months free after.',steps:['Install the desktop app','Record at least 5 meetings','Submit 7 daily check-ins','Rate summaries against your own notes'],state:'active',progress:[true,true,false,false],started:daysAgo(4)},
+      {id:'o3',company:'quill',title:'Import workflow usability test',type:'Moderated usability test',pay:60,time:'30 min',seats:3,total:10,issues:['Task attestation'],needs:['CRM experience'],match:71,desc:'Screen-share while importing a CSV of contacts; think aloud.',steps:['Book a 30-minute slot','Complete the moderated session'],state:'open'},
+      {id:'o4',company:'lattice',title:'Label 200 UI screenshots for training data',type:'Training data · expert labeling',pay:150,time:'~2 hrs',seats:20,total:60,issues:['Task attestation','Skill: UI taxonomy'],needs:['Product design','Design systems'],match:97,desc:'Tag components, layout patterns and accessibility issues in 200 app screenshots. Requires a verified design skill attestation.',steps:['Pass the 10-item calibration set','Label batches 1–4','Review 20 disputed items'],state:'open'},
+      {id:'o5',company:'northwind',title:'15-min call: compare us to your current payroll tool',type:'Customer discovery call',pay:45,time:'15 min',seats:8,total:15,issues:['Task attestation'],needs:['Runs payroll','Ops or finance'],match:38,desc:'We want to hear how you run payroll today and where it breaks.',steps:['Book a slot','Complete the call'],state:'open'},
+      {id:'o6',company:'brightline',title:'Walk us through your job-search workflow',type:'UX interview + perk',pay:30,time:'25 min',seats:22,total:50,issues:['Task attestation'],needs:['Actively job searching'],match:82,perk:'3 months free',desc:'Show us how you track applications today. First 50 testers get 3 months of Brightline free.',steps:['Book a slot','Complete the interview','Optional: accept the free plan'],state:'open'},
+    ],
+    payouts:[
+      {id:'p1',date:daysAgo(55),company:'relay',what:'Onboarding walkthrough + interview',gross:150,net:120,status:'paid'},
+      {id:'p2',date:daysAgo(61),company:'lattice',what:'Training data labeling',gross:187.5,net:150,status:'paid'},
+      {id:'p3',date:daysAgo(74),company:'quill',what:'Import workflow usability test',gross:75,net:60,status:'paid'},
+      {id:'p4',date:daysAgo(4),company:'fathom',what:'7-day beta usage (in progress)',gross:106.25,net:85,status:'pending'},
+    ],
+    lifetimeBefore:825, /* earlier payouts not itemised */
+    stamped:false, stampCode:null,
+    applyLinks:[{id:'l1',for:'Linear · Senior Product Designer',code:'lnr-7k2',views:3,created:daysAgo(6)},{id:'l2',for:'Notion · Staff Designer, Growth',code:'ntn-c91',views:1,created:daysAgo(2)}],
+    company:{key:'relay',plan:'growth',seatsUsed:26,seatsTotal:40,renews:daysAgo(-9),invited:[]},
+    campaigns:[
+      {id:'c1',oppId:'o1',status:'live',completed:14,seats:20,pay:120,converted:3,score:4.4,type:'UX walkthrough + interview',title:'Onboarding walkthrough + 20-min feedback interview',issues:['Task attestation','Skill: product feedback'],created:daysAgo(21),
+        funnel:[['Invited',20],['Accepted',18],['Started',16],['Completed',14],['Became customers',3]],
+        quotes:[['The "connect data" step assumes I know what a schema is. I did not.','Marisol C. · PM, 6 yrs'],['Dashboard builder is great once you find it. Took me 4 minutes to find it.','Alex R. · Product Designer'],['I would pay for this if the free tier let me invite one teammate.','Devon P. · Ops lead']]},
+      {id:'c3',status:'completed',completed:12,seats:12,pay:40,converted:3,score:4.1,type:'Pricing page reaction test',title:'Pricing page reaction test (unmoderated)',issues:['Task attestation'],created:daysAgo(48),
+        funnel:[['Invited',12],['Accepted',12],['Started',12],['Completed',12],['Became customers',3]],
+        quotes:[['"Per seat" made me close the tab. Tell me what a 5-person team costs.','Ines O. · Founder'],['The comparison table sold me more than the hero.','Tomas L. · Data analyst']]},
+      {id:'c2',status:'draft',completed:0,seats:15,pay:90,converted:0,score:null,type:'Moderated usability test',title:'Dashboard builder usability (v2 layout)',issues:['Task attestation'],created:daysAgo(1),funnel:[],quotes:[]},
+    ],
+    pool:[
+      {id:'t1',name:'Ines Okoro',title:'Founder & operator, ex-Stripe',strength:91,att:14,rate:100,skills:['B2B SaaS','Ops','Pricing'],last:'2 days ago'},
+      {id:'t2',name:'Marisol Chen',title:'Product Manager',strength:88,att:11,rate:100,skills:['Analytics','B2B SaaS','Onboarding'],last:'Today'},
+      {id:'t3',name:'Hana Yusuf',title:'Growth marketer',strength:77,att:9,rate:92,skills:['Attribution','Analytics','Email'],last:'Yesterday'},
+      {id:'t4',name:'Alex Rivera',title:'Senior Product Designer',strength:72,att:9,rate:100,skills:['Product design','Design systems','B2B SaaS'],last:'Today'},
+      {id:'t5',name:'Devon Park',title:'Ops lead, 40-person agency',strength:64,att:7,rate:86,skills:['Ops','CRM','Spreadsheets'],last:'3 days ago'},
+      {id:'t6',name:'Tomas Lindqvist',title:'Data analyst',strength:58,att:5,rate:100,skills:['SQL','Analytics','Dashboards'],last:'5 days ago'},
+    ],
+    verifyLog:{}, stampCheck:null,
+  };
+}
+
+let S=load();
+function load(){try{const raw=localStorage.getItem(KEY);if(raw){const p=JSON.parse(raw);if(p&&p.ledger)return p;}}catch(e){}return seed();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function set(fn){fn(S);save();render();}
+
+/* ---------- derived ---------- */
+const ledgerStrength=()=>Math.min(100,S.ledger.reduce((a,e)=>a+(e.status==='verified'?e.weight:Math.round(e.weight/2)),0)+ (S.stamped?3:0));
+const earnedThisQuarter=()=>S.payouts.filter(p=>p.status==='paid'&&new Date(p.date)>new Date('2026-07-01')).reduce((a,p)=>a+p.net,0);
+const lifetime=()=>S.lifetimeBefore+S.payouts.filter(p=>p.status==='paid').reduce((a,p)=>a+p.net,0);
+const pendingNet=()=>S.payouts.filter(p=>p.status==='pending').reduce((a,p)=>a+p.net,0);
+const co=(k)=>COMPANIES[k]||{name:'Your company',color:'#2F5BA8',initial:'Y',stage:''};
+const PLANS={starter:{name:'Starter',price:99,seats:10,blurb:'For a first experiment',feat:['10 tester seats / month','Self-serve campaign builder','Feedback digest + transcripts','Attestations issued in your name']},growth:{name:'Growth',price:299,seats:40,blurb:'For a team shipping weekly',feat:['40 tester seats / month','Recommended testers ranked by ledger strength','Convert-to-customer tracking','Training-data campaigns']},scale:{name:'Scale',price:899,seats:150,blurb:'For a product-led growth motion',feat:['150 tester seats / month','Dedicated pool curation','API + webhook export','Custom attestation schemas']}};
+const FEE=0.2;
+
+/* ---------- icons ---------- */
+const I={
+  check:'<svg class="i" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg>',
+  shield:'<svg class="i" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>',
+  coin:'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10.5c0-1 1-1.5 2.5-1.5s2.5.5 2.5 1.5-1 1.5-2.5 1.5-2.5.5-2.5 1.5 1 1.5 2.5 1.5 2.5-.5 2.5-1.5"/></svg>',
+  link:'<svg class="i" viewBox="0 0 24 24"><path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/></svg>',
+  copy:'<svg class="i" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 012-2h9"/></svg>',
+  arrow:'<svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  clock:'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>',
+  users:'<svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 19c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16 13.5c3 0 5.5 1.8 5.5 4.5"/></svg>',
+  chart:'<svg class="i" viewBox="0 0 24 24"><path d="M4 20h16M7 16v-5M12 16V6M17 16v-8"/></svg>',
+  seal:'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/><path d="M10 12l1.5 1.5L14.5 10"/></svg>',
+  plus:'<svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  ext:'<svg class="i" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M19 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1h5"/></svg>',
+  star:'<svg class="i" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1.1 5.9L12 16.9l-5.3 2.8 1.1-5.9-4.3-4.1 5.9-.8z"/></svg>',
+  doc:'<svg class="i" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>',
+  spark:'<svg class="i" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/></svg>',
+  grid:'<svg class="i" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg>',
+  wallet:'<svg class="i" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M16 14.5h2"/></svg>',
+  search:'<svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg>',
+  chain:'<svg class="i" viewBox="0 0 24 24"><rect x="3" y="9" width="5" height="6" rx="1.5"/><rect x="16" y="9" width="5" height="6" rx="1.5"/><path d="M8 12h8"/></svg>',
+  x:'<svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+};
+const KIND_ICON={claim:I.doc,skill:I.spark,endorse:I.star,task:I.check,credential:I.shield};
+const KIND_LABEL={claim:'Resume claim',skill:'Skill attestation',endorse:'Endorsement',task:'Paid task',credential:'Credential'};
+
+function sealSVG(cls='seal',text='VOUCH LEDGER · VERIFIED · ON-CHAIN · ',color='var(--seal)'){
+  return `<svg class="${cls}" viewBox="0 0 120 120" aria-hidden="true">
+    <circle cx="60" cy="60" r="56" fill="none" stroke="${color}" stroke-width="3"/>
+    <circle cx="60" cy="60" r="50" fill="none" stroke="${color}" stroke-width="1" stroke-dasharray="2 3"/>
+    <circle cx="60" cy="60" r="33" fill="none" stroke="${color}" stroke-width="2"/>
+    <text font-family="IBM Plex Mono, monospace" font-size="9.5" font-weight="600" letter-spacing="1.6" fill="${color}"><textPath href="#sealpath">${text}</textPath></text>
+    <path d="M46 61l9 9 19-20" fill="none" stroke="${color}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+function qrSVG(seedStr){
+  let h=0;for(const c of seedStr)h=(h*31+c.charCodeAt(0))>>>0;
+  let s='';const n=11;
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++){h=(h*1103515245+12345)>>>0;const corner=(x<3&&y<3)||(x>n-4&&y<3)||(x<3&&y>n-4);if(corner||((h>>16)&1))s+=`<rect x="${x}" y="${y}" width="1" height="1"/>`;}
+  return `<svg class="qr" viewBox="0 0 ${n} ${n}" fill="currentColor" aria-hidden="true">${s}</svg>`;
+}
+const logo=(k)=>{const c=co(k);return `<div class="logo" style="background:${c.color}">${c.initial}</div>`;};
+const pillStatus=(s)=>s==='verified'?`<span class="pill good">${I.check} Verified</span>`:s==='pending'?`<span class="pill warn"><span class="dot"></span> Pending vouch</span>`:`<span class="pill neutral">Unverified</span>`;
+
+/* ---------- toasts / modal ---------- */
+function toast(msg,seal=false){const w=document.getElementById('toasts');const t=document.createElement('div');t.className='toast';t.innerHTML=(seal?sealSVG('sealmini','',  'var(--accent-strong)'):'')+`<span>${msg}</span>`;w.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300)},3200);}
+function modal(html,opts={}){const r=document.getElementById('modalRoot');r.innerHTML=`<div class="modal-bg" data-close="1"><div class="modal ${opts.narrow?'narrow':''}" role="dialog" aria-modal="true">${html}</div></div>`;r.querySelector('.modal-bg').addEventListener('click',e=>{if(e.target.dataset.close&&!opts.sticky)closeModal();});}
+function closeModal(){document.getElementById('modalRoot').innerHTML='';}
+function copyText(t){const done=()=>toast('Copied to clipboard');try{navigator.clipboard.writeText(t).then(done).catch(()=>fallback());}catch(e){fallback();}function fallback(){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(_){toast('Select and copy: '+t);}ta.remove();}}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const RAILS={
+  home:[],
+  candidate:[['dashboard','Home',I.grid],['opps','Paid tests',I.coin],['ledger','My ledger',I.shield],['resume','Resume stamping',I.seal],['apply','Apply links',I.link],['wallet','Earnings',I.wallet]],
+  company:[['dashboard','Overview',I.grid],['campaigns','Campaigns',I.chart],['pool','Tester pool',I.users],['billing','Plan & billing',I.wallet]],
+  verify:[['profile','Public profile',I.shield],['stamp','Check a stamp',I.seal]],
+  model:[['flywheel','Flywheel',I.spark],['revenue','Revenue math',I.chart],['pricing','Pricing',I.wallet]],
+};
+function curView(){return S.role==='candidate'?S.cView:S.role==='company'?S.coView:S.role==='verify'?S.vView:S.mView;}
+function setView(v){set(s=>{if(s.role==='candidate')s.cView=v;else if(s.role==='company')s.coView=v;else if(s.role==='verify')s.vView=v;else s.mView=v;});window.scrollTo({top:0,behavior:'smooth'});}
+
+function render(){
+  document.querySelectorAll('.roles button').forEach(b=>b.classList.toggle('on',b.dataset.role===S.role));
+  const who=document.getElementById('who');
+  who.innerHTML=S.role==='company'?`<div class="avatar co">R</div><span class="name">Relay Analytics · Growth plan</span>`:S.role==='candidate'?`<div class="avatar">AR</div><span class="name">${S.candidate.name}</span>`:S.role==='verify'?`<span class="pill info">Viewing as hiring manager</span>`:'';
+  const rail=document.getElementById('rail');const items=RAILS[S.role];
+  const layout=document.getElementById('layout');
+  layout.style.gridTemplateColumns=items.length?'' :'1fr';
+  rail.hidden=!items.length;
+  const counts={opps:S.opps.filter(o=>o.state==='open').length,campaigns:S.campaigns.filter(c=>c.status==='live').length,ledger:S.ledger.length};
+  rail.innerHTML=items.map(([k,l,ic])=>`<button data-view="${k}" class="${curView()===k?'on':''}">${ic}<span>${l}</span>${counts[k]?`<span class="cnt">${counts[k]}</span>`:''}</button>`).join('')+
+    (S.role==='candidate'?`<div class="sep"></div><div class="rail-note">Everything on your ledger is portable. Export it, or point employers to <span class="mono">vouch.id/m/${S.candidate.handle}</span>.</div>`:'')+
+    (S.role==='company'?`<div class="sep"></div><div class="rail-note">${S.company.seatsTotal-S.company.seatsUsed} of ${S.company.seatsTotal} tester seats left this cycle. Renews ${fmtDate(S.company.renews)}.</div>`:'');
+  const main=document.getElementById('main');
+  const v=curView();
+  main.innerHTML=S.role==='home'?vHome():S.role==='candidate'?({dashboard:vCandDash,opps:vOpps,ledger:vLedger,resume:vResume,apply:vApply,wallet:vWallet}[v])():S.role==='company'?({dashboard:vCoDash,campaigns:vCampaigns,pool:vPool,billing:vBilling}[v])():S.role==='verify'?({profile:vPublic,stamp:vStampCheck}[v])():({flywheel:vFlywheel,revenue:vRevenue,pricing:vPricing}[v])();
+  const tok=S.role==='home'?'overview':`${S.role}-${v}`;
+  if(location.hash!=='#'+tok)history.replaceState(null,'','#'+tok);
+}
+
+/* ---------- HOME ---------- */
+function vHome(){
+  return `
+  <section class="marketing">
+    <div class="hero">
+      <div class="eyebrow">Verified careers · paid product testing</div>
+      <h1>Get paid to wait. Leave with proof.</h1>
+      <p class="lead">Vouch Ledger turns a job search into paid work that builds a verifiable record. Startups pay to put their product in front of real, vetted people. Candidates earn money and on-chain attestations for the tasks they complete. Hiring managers open one link and see what is actually true.</p>
+      <div class="row" style="margin-top:18px">
+        <button class="btn primary" data-go="candidate">I'm looking for work ${I.arrow}</button>
+        <button class="btn" data-go="company">I need users and feedback</button>
+        <button class="btn ghost" data-go="verify">I'm hiring</button>
+      </div>
+      <div class="row small muted" style="margin-top:14px;gap:16px">
+        <span>${I.check} Candidates keep 80%</span><span>${I.check} Plans from $99/mo</span><span>${I.check} Ledger is portable and open</span>
+      </div>
+    </div>
+    <div class="ticker" aria-label="Recent ledger activity">
+      <div class="eyebrow">Live on the ledger</div>
+      <div class="tick">${logo('lattice')}<div><div class="who">Marisol Chen earned $150</div><div class="small muted">Training-data labeling for Lattice Labs · attestation minted</div></div></div>
+      <div class="tick">${logo('relay')}<div><div class="who">Relay Analytics launched a campaign</div><div class="small muted">20 seats · $120 per tester · onboarding walkthrough</div></div></div>
+      <div class="tick"><div class="avatar">IO</div><div><div class="who">Ines Okoro's claim was vouched</div><div class="small muted">"Grew self-serve revenue 3× at Stripe" · 2 of 2 vouches</div></div></div>
+      <div class="tick"><div class="avatar" style="background:var(--seal-soft);color:var(--seal)">${I.seal}</div><div><div class="who">Devon Park stamped a resume</div><div class="small muted">6 claims verified · shared with 2 employers</div></div></div>
+      <div class="tick">${logo('fathom')}<div><div class="who">Fathom Notes converted 4 testers</div><div class="small muted">Out of 25 · 7-day beta campaign</div></div></div>
+    </div>
+  </section>
+  <section class="grid g3">
+    <div class="card"><div class="row" style="gap:8px"><div class="avatar">C</div><h3>Candidates</h3></div><p class="muted" style="margin-top:8px">Pick paid tests that match your background. Each one you finish pays out and writes a task attestation to your ledger. Your resume claims get vouched by real people. Stamp your resume and add one link to any application.</p></div>
+    <div class="card"><div class="row" style="gap:8px"><div class="avatar co">S</div><h3>Startups</h3></div><p class="muted" style="margin-top:8px">Distribution is the hard part. Pay a flat monthly plan, choose testers by verified skills, and get sign-ups, UX sessions, interviews or labeled data within days. Many testers become customers.</p></div>
+    <div class="card"><div class="row" style="gap:8px"><div class="avatar" style="background:var(--info-soft);color:var(--info)">H</div><h3>Hiring managers</h3></div><p class="muted" style="margin-top:8px">No account, no fee. Open a candidate's link, see every claim with who vouched for it and the chain record behind it. Check a stamped resume in one paste.</p></div>
+  </section>`;
+}
+
+/* ---------- CANDIDATE ---------- */
+function strengthRing(){
+  const v=ledgerStrength();const r=42,c=2*Math.PI*r;
+  return `<div class="ring"><svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="${r}" stroke="var(--surface-3)" stroke-width="8" fill="none"/><circle cx="48" cy="48" r="${r}" stroke="var(--accent)" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-v/100)}"/></svg><div class="v">${v}<small>STRENGTH</small></div></div>`;
+}
+function vCandDash(){
+  const active=S.opps.filter(o=>o.state==='active');
+  const rec=S.opps.filter(o=>o.state==='open').sort((a,b)=>b.match-a.match).slice(0,3);
+  return `
+  <div class="page-head"><div><div class="eyebrow">Good morning</div><h1>${S.candidate.name.split(' ')[0]}, you have ${S.opps.filter(o=>o.state==='open').length} paid tests that match your ledger</h1><p>Every task you finish pays out and adds a verified entry your next employer can check.</p></div></div>
+  <div class="grid g4">
+    <div class="card kpi"><span class="l">Earned this quarter</span><span class="v">${money(earnedThisQuarter())}</span><span class="d">+${money(pendingNet())} pending</span></div>
+    <div class="card kpi"><span class="l">Lifetime earned</span><span class="v">${money(lifetime())}</span><span class="d">${S.payouts.filter(p=>p.status==='paid').length+9} tasks completed</span></div>
+    <div class="card kpi"><span class="l">Ledger entries</span><span class="v">${S.ledger.length}</span><span class="d">${S.ledger.filter(e=>e.status==='verified').length} verified</span></div>
+    <div class="card kpi"><span class="l">Profile views (30d)</span><span class="v">17</span><span class="d">4 from employers</span></div>
+  </div>
+  <div class="split">
+    <div class="stack" style="gap:18px">
+      <div class="card">
+        <div class="row between"><h2>In progress</h2><button class="btn sm ghost" data-view="opps">All paid tests ${I.arrow}</button></div>
+        ${active.length?active.map(o=>activeCard(o)).join(''):`<div class="note" style="margin-top:12px">Nothing in progress. Accept a paid test to start earning.</div>`}
+      </div>
+      <div class="card">
+        <div class="row between"><h2>Recommended for you</h2><span class="small muted">Ranked by match to your ledger</span></div>
+        <div class="stack" style="margin-top:12px">${rec.map(o=>oppCard(o,true)).join('')}</div>
+      </div>
+    </div>
+    <div class="stack" style="gap:18px">
+      <div class="card">
+        <div class="strength">${strengthRing()}<div><h3>Ledger strength</h3><p class="small muted" style="margin-top:4px">Weighted by verified claims, attester reputation and task history. Stronger ledgers get matched to higher-paying tests first.</p><div class="row small" style="margin-top:10px;gap:14px"><span>${I.arrow} Get Maya to vouch <b>+4</b></span>${S.stamped?'':`<span>${I.arrow} Stamp resume <b>+3</b></span>`}</div></div></div>
+      </div>
+      <div class="card">
+        <h3>Your public link</h3>
+        <div class="linkbox" style="margin-top:10px"><span>vouch.id/m/${S.candidate.handle}</span><button class="btn sm" data-copy="https://vouch.id/m/${S.candidate.handle}">${I.copy} Copy</button></div>
+        <p class="small muted" style="margin-top:8px">Paste it into cover letters, LinkedIn, or the "website" field on applications. Or make a tracked link per application.</p>
+        <button class="btn sm ghost" style="margin-top:6px" data-view="apply">Apply links ${I.arrow}</button>
+      </div>
+      <div class="card">
+        <h3>Latest on your ledger</h3>
+        <div style="margin-top:6px">${S.ledger.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,3).map(e=>ledgerEntry(e,true)).join('')}</div>
+        <button class="btn sm ghost" data-view="ledger">Open ledger ${I.arrow}</button>
+      </div>
+    </div>
+  </div>`;
+}
+function activeCard(o){
+  const done=o.progress.filter(Boolean).length;
+  return `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)">
+    <div class="row between"><div class="row">${logo(o.company)}<div><div style="font-weight:600">${o.title}</div><div class="small muted">${co(o.company).name} · ${o.time} · pays ${money(o.pay)} on completion</div></div></div><span class="pill info">${done}/${o.steps.length} steps</span></div>
+    <div class="bar" style="margin:10px 0"><i style="width:${done/o.steps.length*100}%"></i></div>
+    <div class="tasklist">${o.steps.map((s,i)=>`<div class="task ${o.progress[i]?'done':''}"><span class="cb">${o.progress[i]?I.check:''}</span><span>${s}</span>${!o.progress[i]&&(i===0||o.progress[i-1])?`<button class="btn sm primary" data-step="${o.id}:${i}">${i===o.steps.length-1?'Finish & claim payout':'Mark done'}</button>`:''}</div>`).join('')}</div>
+  </div>`;
+}
+function oppCard(o,compact=false){
+  const c=co(o.company);
+  return `<div class="card tight opp">
+    <div>
+      <div class="row" style="gap:10px">${logo(o.company)}<div><div style="font-weight:600">${o.title}</div><div class="small muted">${c.name} · ${c.stage}</div></div></div>
+      <div class="meta"><span>${I.clock} ${o.time}</span><span>${I.users} ${o.seats} seats left</span><span class="${o.match>=80?'':'muted'}" style="${o.match>=80?'color:var(--good);font-weight:600':''}">${I.spark} ${o.match}% match</span>${o.perk?`<span class="pill accent">+ ${o.perk}</span>`:''}</div>
+      ${compact?'':`<p class="small" style="margin-top:8px;color:var(--ink-2);max-width:60ch">${o.desc}</p>`}
+      <div class="issues"><span>On completion:</span>${o.issues.map(x=>`<span class="mini">${I.seal} ${x}</span>`).join('')}</div>
+    </div>
+    <div class="stack" style="align-items:flex-end;gap:8px">
+      <div class="pay">${money(o.pay)}<small>you keep · ${money(Math.round(o.pay/(1-FEE)))} billed</small></div>
+      ${o.state==='open'?`<button class="btn primary sm" data-accept="${o.id}">Accept</button>`:o.state==='active'?`<span class="pill info">In progress</span>`:`<span class="pill good">${I.check} Done</span>`}
+    </div>
+  </div>`;
+}
+function vOpps(){
+  const f=S.oppFilter;
+  const types=['all','UX','Beta','Interview','Training data'];
+  const list=S.opps.filter(o=>o.state==='open').filter(o=>f==='all'||(f==='UX'&&/usability|walkthrough/i.test(o.type))||(f==='Beta'&&/beta/i.test(o.type))||(f==='Interview'&&/interview|call/i.test(o.type))||(f==='Training data'&&/training/i.test(o.type))).sort((a,b)=>b.match-a.match);
+  const active=S.opps.filter(o=>o.state==='active');
+  return `
+  <div class="page-head"><div><div class="eyebrow">Marketplace</div><h1>Paid tests</h1><p>Startups pay to get in front of people like you. Each test pays out on completion and writes an attestation to your ledger, issued by the company.</p></div>
+  <div class="kpi" style="text-align:right;align-items:flex-end"><span class="v">${money(list.reduce((a,o)=>a+o.pay,0))}</span><span class="l">available to you right now</span></div></div>
+  ${active.length?`<div class="card"><h2>In progress</h2>${active.map(activeCard).join('')}</div>`:''}
+  <div class="row between"><div class="chips">${types.map(t=>`<button class="chip ${f===t?'on':''}" data-filter="${t}">${t==='all'?'All types':t}</button>`).join('')}</div><span class="small muted">${list.length} open · sorted by match</span></div>
+  <div class="stack">${list.map(o=>oppCard(o)).join('')||'<div class="note">No open tests of this type right now. New campaigns post daily.</div>'}</div>
+  <div class="note">${I.shield} Companies never see your contact details until you accept. Payouts are held in escrow by Vouch Ledger and released when the company confirms completion, or automatically after 72 hours.</div>`;
+}
+function ledgerEntry(e,compact=false){
+  return `<div class="entry ${e.isNew?'new':''}" id="e-${e.id}">
+    <div class="ic ${e.kind}">${KIND_ICON[e.kind]||I.shield}</div>
+    <div><div class="t">${e.title}</div><div class="m">${KIND_LABEL[e.kind]} · ${e.by}</div>
+      ${compact?'':`<div class="proof">${pillStatus(e.status)}<span class="hash" title="${e.tx}">tx ${shortHash(e.tx)}</span><span class="small muted">block ${e.block.toLocaleString()}</span>${e.payout?`<span class="pill neutral">${money(e.payout)} paid</span>`:''}${e.kind==='claim'&&e.status==='pending'?`<button class="btn sm" data-nudge="${e.id}">Nudge Maya</button>`:''}</div>`}
+    </div>
+    <div class="small muted num" style="white-space:nowrap">${fmtDate(e.date)}</div>
+  </div>`;
+}
+function vLedger(){
+  const sorted=S.ledger.slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const byKind=k=>S.ledger.filter(e=>e.kind===k).length;
+  return `
+  <div class="page-head"><div><div class="eyebrow">Portable record</div><h1>My ledger</h1><p>Every entry is signed by whoever issued it and anchored to a public chain. You own it. Export it, host it yourself, or keep pointing people here.</p></div>
+    <div class="row"><button class="btn" data-export="1">${I.doc} Export JSON-LD</button><button class="btn primary" data-view="resume">${I.seal} Stamp my resume</button></div></div>
+  <div class="split">
+    <div class="card">
+      <div class="row between"><h2>${S.ledger.length} entries</h2><div class="chips small"><span class="mini">${byKind('claim')} claims</span><span class="mini">${byKind('skill')} skills</span><span class="mini">${byKind('task')} paid tasks</span><span class="mini">${byKind('endorse')} endorsements</span><span class="mini">${byKind('credential')} credential</span></div></div>
+      <div style="margin-top:8px">${sorted.map(e=>ledgerEntry(e)).join('')}</div>
+    </div>
+    <div class="stack" style="gap:18px">
+      <div class="card"><div class="strength">${strengthRing()}<div><h3>How strength is computed</h3><ul class="small muted" style="margin:6px 0 0;padding-left:16px;line-height:1.7"><li>Resume claims with 2+ vouches weigh most</li><li>Attester reputation (their own ledger) multiplies</li><li>Paid tasks count once confirmed by the company</li><li>Pending items count at half weight</li></ul></div></div></div>
+      <div class="card"><h3>Identity</h3><div class="proofbox" style="margin-top:10px"><b>handle</b><span>vouch.id/m/${S.candidate.handle}</span><b>did</b><span>${S.candidate.did}</span><b>chain</b><span>Base mainnet · VouchRegistry v2</span><b>since</b><span>${fmtDate(S.candidate.joined)}</span></div><p class="small muted" style="margin-top:10px">Attestations follow the EAS schema, so any wallet or explorer can read them without Vouch Ledger.</p></div>
+      <div class="card"><h3>Ask for a vouch</h3><p class="small muted" style="margin-top:4px">Send a former manager or peer a link. They confirm a specific claim and sign it. No account needed on their side.</p><div class="field" style="margin-top:10px"><label for="vouchClaim">Claim</label><select id="vouchClaim"><option>Shipped Cadence Health mobile app 0→1</option><option>New claim…</option></select></div><div class="field" style="margin-top:8px"><label for="vouchEmail">Their email</label><input id="vouchEmail" placeholder="maya@cadencehealth.com"></div><button class="btn primary sm" style="margin-top:10px;align-self:flex-start" data-askvouch="1">Send vouch request</button></div>
+    </div>
+  </div>`;
+}
+function vResume(){
+  const claims=[
+    {t:'Senior Product Designer, Loom · 2022–2025',s:'verified',ref:'a2'},
+    {t:'Led checkout redesign that lifted activation 18%',s:'verified',ref:'a1'},
+    {t:'Built and maintained the Loom design system',s:'verified',ref:'a3'},
+    {t:'Product Designer, Cadence Health · 2019–2022',s:'verified',ref:null},
+    {t:'Shipped mobile app 0→1 on iOS and Android',s:'pending',ref:'a8'},
+    {t:'NN/g UX Certification',s:'verified',ref:'a9'},
+    {t:'Fluent in Spanish',s:'none',ref:null},
+  ];
+  const v=claims.filter(c=>c.s==='verified').length,p=claims.filter(c=>c.s==='pending').length;
+  const code=S.stampCode||'VL-8F3A-C21E-'+today.getFullYear();
+  return `
+  <div class="page-head"><div><div class="eyebrow">Resume stamping</div><h1>Stamp your resume</h1><p>We match each line of your resume to your ledger. Verified lines get a mark. The whole document gets a seal, a check code and a QR that opens your public profile. Employers can confirm it was not edited afterward.</p></div></div>
+  <div class="split">
+    <div class="card">
+      <div class="row between"><div class="row"><span class="pill good">${I.check} ${v} verified</span><span class="pill warn">${p} pending</span><span class="pill neutral">${claims.length-v-p} unverified</span></div><span class="small muted">alex-rivera-resume-2026.pdf</span></div>
+      <div class="resume ${S.stamped?'stamped':''}" style="margin-top:12px">
+        <div class="stampmark">${sealSVG('seal','VOUCH LEDGER · STAMPED · '+fmtDate(today).toUpperCase().replace(',','')+' · ')}</div>
+        <h4>Alex Rivera</h4>
+        <div>Senior Product Designer · Austin, TX · vouch.id/m/alex-rivera</div>
+        <div class="l">Experience</div>
+        ${claims.slice(0,5).map(c=>claimLine(c)).join('')}
+        <div class="l">Credentials & skills</div>
+        ${claims.slice(5).map(c=>claimLine(c)).join('')}
+        <div class="foot"><span>Stamp ${code}</span><span>sha256 ${hex(12)}…</span><span>verify at vouch.id/check</span>${qrSVG(code)}</div>
+      </div>
+    </div>
+    <div class="stack" style="gap:18px">
+      <div class="card">
+        <h3>${S.stamped?'Stamped':'Ready to stamp'}</h3>
+        <p class="small muted" style="margin-top:4px">${S.stamped?'The stamped PDF is in your downloads. The check code below works for anyone, no account needed.':'Stamping is free. Unverified lines stay on the resume without a mark. Pending lines get a mark once the vouch arrives; no restamp needed.'}</p>
+        ${S.stamped?`<div class="linkbox" style="margin-top:10px"><span>${code}</span><button class="btn sm" data-copy="${code}">${I.copy} Copy</button></div>
+        <div class="row" style="margin-top:10px"><button class="btn" data-copy="https://vouch.id/check/${code}">${I.link} Copy check link</button><button class="btn ghost" data-go="verify" data-goview="stamp">See what employers see ${I.arrow}</button></div>`:
+        `<button class="btn seal" style="margin-top:12px" data-stamp="1">${I.seal} Stamp resume</button>`}
+      </div>
+      <div class="card"><h3>What the stamp proves</h3><ul class="small" style="margin:8px 0 0;padding-left:16px;color:var(--ink-2);line-height:1.8"><li>The document hash was anchored on this date</li><li>Which lines matched a verified ledger entry at that time</li><li>Who vouched for each line, and their own standing</li><li>That the PDF an employer holds is byte-identical</li></ul></div>
+      <div class="card"><h3>Unverified line</h3><p class="small muted" style="margin-top:4px">"Fluent in Spanish" has no attestation. Take a 12-minute paid language screen from Lingo Labs ($20) and it gets one.</p><button class="btn sm" style="margin-top:8px" data-toast="Added to your paid tests">Find a test for this</button></div>
+    </div>
+  </div>`;
+}
+function claimLine(c){const st=c.s==='verified'?`<span style="color:var(--good)">${I.check}</span>`:c.s==='pending'?`<span style="color:var(--warn)">${I.clock}</span>`:`<span class="muted" style="opacity:.5">${I.x}</span>`;return `<div class="claim ${c.s==='verified'?'v':''}" title="${c.s}"><span class="st">${st}</span><span>${c.t}</span></div>`;}
+function vApply(){
+  return `
+  <div class="page-head"><div><div class="eyebrow">Applications</div><h1>Apply links</h1><p>One tracked link per application. Put it in the cover letter, the "portfolio" field, or your email signature. You will see when it was opened and which entries the employer looked at.</p></div></div>
+  <div class="split">
+    <div class="card">
+      <h2>Your links</h2>
+      <div class="tbl-wrap"><table class="tbl" style="margin-top:8px"><thead><tr><th>Application</th><th>Link</th><th class="r">Opens</th><th>Created</th><th></th></tr></thead><tbody>
+      ${S.applyLinks.map(l=>`<tr><td style="font-weight:600">${l.for}</td><td><span class="hash">vouch.id/m/${S.candidate.handle}/${l.code}</span></td><td class="r">${l.views}</td><td class="small muted">${fmtDate(l.created)}</td><td class="r"><button class="btn sm" data-copy="https://vouch.id/m/${S.candidate.handle}/${l.code}">${I.copy}</button></td></tr>`).join('')}
+      </tbody></table></div>
+    </div>
+    <div class="card">
+      <h3>New apply link</h3>
+      <div class="field" style="margin-top:10px"><label for="applyFor">Company and role</label><input id="applyFor" placeholder="e.g. Figma · Product Designer, Growth"></div>
+      <div class="field" style="margin-top:8px"><label for="applyNote">Optional note shown to the reader</label><textarea id="applyNote" rows="2" placeholder="Hi Figma team, the three entries most relevant to this role are pinned at the top."></textarea></div>
+      <button class="btn primary" style="margin-top:12px" data-mklink="1">${I.link} Create link</button>
+      <div class="divider" style="margin:16px 0"></div>
+      <h3>Suggested cover-letter line</h3>
+      <div class="note" style="margin-top:8px">"My work history, including who vouched for each claim, is verifiable at vouch.id/m/${S.candidate.handle}. No account needed."</div>
+      <button class="btn sm ghost" style="margin-top:8px" data-copy="My work history, including who vouched for each claim, is verifiable at vouch.id/m/${S.candidate.handle}. No account needed.">${I.copy} Copy line</button>
+    </div>
+  </div>`;
+}
+function vWallet(){
+  const rows=S.payouts.slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  return `
+  <div class="page-head"><div><div class="eyebrow">Earnings</div><h1>Wallet</h1><p>You keep 80% of what companies pay for your time. The 20% platform fee is shown on every line so nothing is hidden.</p></div><button class="btn" data-toast="Payout scheduled for Friday">${I.wallet} Withdraw ${money(earnedThisQuarter())}</button></div>
+  <div class="grid g3">
+    <div class="card kpi"><span class="l">Available</span><span class="v">${money(earnedThisQuarter())}</span><span class="d">Next payout Friday · to Alex's bank ···4471</span></div>
+    <div class="card kpi"><span class="l">Pending (in escrow)</span><span class="v">${money(pendingNet())}</span><span class="d muted">Released when company confirms</span></div>
+    <div class="card kpi"><span class="l">Lifetime</span><span class="v">${money(lifetime())}</span><span class="d muted">Since ${fmtDate(S.candidate.joined)}</span></div>
+  </div>
+  <div class="card"><h2>Payouts</h2>
+    <div class="tbl-wrap"><table class="tbl" style="margin-top:8px"><thead><tr><th>Date</th><th>Company</th><th>Task</th><th class="r">Company paid</th><th class="r">Fee (20%)</th><th class="r">You keep</th><th>Status</th></tr></thead><tbody>
+    ${rows.map(p=>`<tr><td class="small muted num">${fmtDate(p.date)}</td><td><div class="row" style="gap:8px">${logo(p.company)}<span>${co(p.company).name}</span></div></td><td>${p.what}</td><td class="r muted">${money(p.gross)}</td><td class="r muted">−${money(p.gross-p.net)}</td><td class="r" style="font-weight:600">${money(p.net)}</td><td>${p.status==='paid'?'<span class="pill good">Paid</span>':'<span class="pill warn">Escrow</span>'}</td></tr>`).join('')}
+    <tr><td colspan="5" class="small muted">Earlier payouts (9 tasks, Mar–Jun)</td><td class="r" style="font-weight:600">${money(S.lifetimeBefore)}</td><td><span class="pill good">Paid</span></td></tr>
+    </tbody></table></div>
+  </div>
+  <div class="note">${I.doc} Earnings are reported on a 1099 at year end. Tax documents and every task's attestation are in your exports.</div>`;
+}
+
+/* ---------- COMPANY ---------- */
+function vCoDash(){
+  const c=S.company;const plan=PLANS[c.plan];
+  const live=S.campaigns.filter(x=>x.status==='live');
+  const completed=S.campaigns.reduce((a,x)=>a+x.completed,0);
+  const converted=S.campaigns.reduce((a,x)=>a+x.converted,0);
+  return `
+  <div class="page-head"><div><div class="eyebrow">Relay Analytics · ${plan.name} plan</div><h1>Growth overview</h1><p>Testers come from the Vouch Ledger pool, ranked by verified skills. You pay a flat plan plus each tester's payout. Completed tasks issue attestations in your company's name.</p></div><button class="btn primary" data-newcamp="1">${I.plus} New campaign</button></div>
+  <div class="grid g4">
+    <div class="card kpi"><span class="l">Tester seats this cycle</span><span class="v">${c.seatsUsed}<span class="muted" style="font-size:16px;font-weight:600">/${c.seatsTotal}</span></span><div class="bar" style="margin-top:6px"><i style="width:${c.seatsUsed/c.seatsTotal*100}%"></i></div></div>
+    <div class="card kpi"><span class="l">Tasks completed</span><span class="v">${completed}</span><span class="d">across ${S.campaigns.length} campaigns</span></div>
+    <div class="card kpi"><span class="l">Testers who became customers</span><span class="v">${converted}</span><span class="d">${Math.round(converted/Math.max(1,completed)*100)}% conversion · $${(converted*79).toLocaleString()} MRR</span></div>
+    <div class="card kpi"><span class="l">Cost per completed task</span><span class="v">$${Math.round((plan.price+S.campaigns.reduce((a,x)=>a+x.completed*x.pay/(1-FEE),0))/Math.max(1,completed))}</span><span class="d muted">plan + payouts ÷ completions</span></div>
+  </div>
+  <div class="split">
+    <div class="card">
+      <div class="row between"><h2>Live campaigns</h2><button class="btn sm ghost" data-view="campaigns">All campaigns ${I.arrow}</button></div>
+      <div class="stack" style="margin-top:10px">${live.map(campaignRow).join('')||'<div class="note">No live campaigns.</div>'}</div>
+    </div>
+    <div class="stack" style="gap:18px">
+      <div class="card"><h3>What testers said this week</h3><div class="stack" style="margin-top:10px">${S.campaigns[0].quotes.slice(0,2).map(q=>`<div class="quote">${q[0]}<div class="by">${q[1]}</div></div>`).join('')}</div></div>
+      <div class="card"><h3>Attestations you issued</h3><p class="big" style="margin-top:6px">27</p><p class="small muted">Each one carries your company name on a tester's permanent ledger. 11 testers list Relay Analytics on their public profile.</p></div>
+    </div>
+  </div>`;
+}
+function campaignRow(cp){
+  const pct=cp.seats?cp.completed/cp.seats*100:0;
+  return `<div class="card tight flat" style="background:var(--surface-2)">
+    <div class="row between"><div><div style="font-weight:600">${cp.title}</div><div class="small muted">${cp.type} · ${money(cp.pay)} per tester · ${cp.seats} seats · created ${fmtDate(cp.created)}</div></div>
+    ${cp.status==='live'?'<span class="pill good"><span class="dot"></span> Live</span>':cp.status==='completed'?'<span class="pill neutral">Completed</span>':'<span class="pill warn">Draft</span>'}</div>
+    <div class="row between" style="margin-top:10px"><div class="bar" style="flex:1;min-width:120px"><i style="width:${pct}%"></i></div><span class="small num muted">${cp.completed}/${cp.seats} completed${cp.converted?` · ${cp.converted} converted`:''}${cp.score?` · ${cp.score}★`:''}</span>
+    ${cp.status==='draft'?`<button class="btn sm primary" data-launch="${cp.id}">Launch</button>`:`<button class="btn sm" data-results="${cp.id}">Results</button>`}</div>
+  </div>`;
+}
+function vCampaigns(){
+  const open=S.campaigns.find(c=>c.id===S.openCampaign);
+  return `
+  <div class="page-head"><div><div class="eyebrow">Campaigns</div><h1>Campaigns</h1><p>A campaign is a task, a payout, a tester profile and the attestation you issue at the end.</p></div><button class="btn primary" data-newcamp="1">${I.plus} New campaign</button></div>
+  <div class="stack">${S.campaigns.map(campaignRow).join('')}</div>
+  ${open?campaignResults(open):''}`;
+}
+function campaignResults(cp){
+  const max=cp.funnel[0]?.[1]||1;
+  return `<div class="card" id="results">
+    <div class="row between"><div><div class="eyebrow">Results</div><h2>${cp.title}</h2></div><div class="row"><button class="btn sm" data-toast="Exported 14 transcripts + CSV">${I.doc} Export</button><button class="btn sm ghost" data-closeresults="1">${I.x}</button></div></div>
+    <div class="grid g3" style="margin-top:14px">
+      <div><h3 style="margin-bottom:10px">Funnel</h3><div class="funnel">${cp.funnel.map(([l,n])=>`<div class="f"><span class="muted">${l}</span><div class="b"><i style="width:${n/max*100}%"></i></div><span class="r num" style="font-weight:600;text-align:right">${n}</span></div>`).join('')}</div></div>
+      <div><h3 style="margin-bottom:10px">What they said</h3><div class="stack">${cp.quotes.map(q=>`<div class="quote">${q[0]}<div class="by">${q[1]}</div></div>`).join('')}</div></div>
+      <div><h3 style="margin-bottom:10px">Cost</h3><div class="proofbox"><b>payouts</b><span>${cp.completed} × ${money(cp.pay)} = ${money(cp.completed*cp.pay)}</span><b>platform fee</b><span>${money(Math.round(cp.completed*cp.pay*FEE/(1-FEE)))}</span><b>total</b><span>${money(Math.round(cp.completed*cp.pay/(1-FEE)))}</span><b>per customer</b><span>${cp.converted?money(Math.round(cp.completed*cp.pay/(1-FEE)/cp.converted)):'—'}</span><b>attestations</b><span>${cp.completed} issued</span></div>
+      <p class="small muted" style="margin-top:10px">Compare: your paid-social CAC last quarter was $412.</p></div>
+    </div>
+  </div>`;
+}
+function vPool(){
+  const inv=S.company.invited;
+  const sorted=S.pool.slice().sort((a,b)=>b.strength-a.strength);
+  return `
+  <div class="page-head"><div><div class="eyebrow">Tester pool</div><h1>Recommended testers</h1><p>Ranked for your open campaign by ledger strength and skill match. You see verified attestations, never contact details, until a tester accepts.</p></div><div class="chips"><button class="chip on">Onboarding walkthrough</button><button class="chip">All campaigns</button></div></div>
+  <div class="card">
+    ${sorted.map(t=>`<div class="pool">
+      <div class="avatar" style="width:40px;height:40px;font-size:14px">${t.name.split(' ').map(x=>x[0]).join('')}</div>
+      <div><div class="row" style="gap:8px"><span style="font-weight:600">${t.name}</span><span class="small muted">${t.title}</span></div>
+        <div class="badges">${t.skills.map(s=>`<span class="mini">${I.check} ${s}</span>`).join('')}<span class="mini">${t.att} attestations</span><span class="mini">${t.rate}% completion</span><span class="small muted">· active ${t.last}</span></div></div>
+      <div class="row" style="gap:12px"><div class="kpi" style="align-items:flex-end"><span class="v" style="font-size:22px">${t.strength}</span><span class="l">strength</span></div>
+        ${inv.includes(t.id)?'<span class="pill good">Invited</span>':`<button class="btn sm primary" data-invite="${t.id}">Invite</button>`}</div>
+    </div>`).join('')}
+  </div>
+  <div class="note">${I.users} 1,284 testers match at least two of your criteria. The Growth plan shows the top 40 each cycle; Scale unlocks the full ranked list and saved segments.</div>`;
+}
+function vBilling(){
+  const cur=S.company.plan;
+  return `
+  <div class="page-head"><div><div class="eyebrow">Billing</div><h1>Plan & billing</h1><p>A flat plan buys tester seats and the matching engine. Tester payouts are billed as used, with the 20% platform fee shown on every line.</p></div></div>
+  <div class="grid g3">${Object.entries(PLANS).map(([k,p])=>`<div class="plan ${k===cur?'cur':''}">${k===cur?'<span class="cur-tag">Current</span>':''}<div class="eyebrow">${p.name}</div><div class="price">$${p.price}<small> / month</small></div><p class="small muted">${p.blurb}</p><ul>${p.feat.map(f=>`<li>${f}</li>`).join('')}</ul><button class="btn ${k===cur?'':'primary'} sm" style="margin-top:auto" ${k===cur?'disabled':''} data-plan="${k}">${k===cur?'Your plan':(PLANS[k].price>PLANS[cur].price?'Upgrade':'Downgrade')}</button></div>`).join('')}</div>
+  <div class="card"><h2>This cycle</h2>
+    <div class="tbl-wrap"><table class="tbl" style="margin-top:8px"><thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Amount</th></tr></thead><tbody>
+      <tr><td>${PLANS[cur].name} plan</td><td class="r">1</td><td class="r">${money(PLANS[cur].price)}</td></tr>
+      <tr><td>Tester payouts (passed through to testers)</td><td class="r">26</td><td class="r">$2,640</td></tr>
+      <tr><td>Platform fee on payouts (20%)</td><td class="r"></td><td class="r">$660</td></tr>
+      <tr><td style="font-weight:600">Total to date</td><td></td><td class="r" style="font-weight:600">${money(PLANS[cur].price+3300)}</td></tr>
+    </tbody></table></div>
+    <p class="small muted" style="margin-top:10px">Card ···· 8812 · Renews ${fmtDate(S.company.renews)} · Invoices go to finance@relayanalytics.com</p>
+  </div>`;
+}
+
+/* ---------- VERIFY (public) ---------- */
+function vPublic(){
+  const sorted=S.ledger.slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  return `
+  <div class="pub-note">${I.shield}<span>You are viewing the public page at <span class="mono">vouch.id/m/${S.candidate.handle}</span>. No account or fee is required to read or verify it.</span></div>
+  <div class="card">
+    <div class="verify-head"><div class="avatar">AR</div><div><h1 style="font-size:26px">${S.candidate.name}</h1><div class="muted">${S.candidate.title} · ${S.candidate.loc} · on Vouch Ledger since ${fmtDate(S.candidate.joined)}</div>
+      <div class="row" style="margin-top:8px;gap:6px"><span class="pill good">${I.check} ${S.ledger.filter(e=>e.status==='verified').length} verified entries</span><span class="pill accent">Ledger strength ${ledgerStrength()}</span>${S.stamped?`<span class="pill seal">${I.seal} Resume stamped</span>`:''}</div></div>
+      <div class="row"><button class="btn sm" data-copy="${S.candidate.did}">${I.copy} DID</button><button class="btn sm" data-toast="Opening block explorer (simulated)">${I.ext} Explorer</button></div></div>
+  </div>
+  <div class="split">
+    <div class="card">
+      <h2>Verified record</h2>
+      <p class="small muted" style="margin-top:4px">Click "Verify" on any entry to re-check its signature against the chain right now.</p>
+      <div style="margin-top:8px">${sorted.map(e=>publicEntry(e)).join('')}</div>
+    </div>
+    <div class="stack" style="gap:18px">
+      <div class="card"><h3>How to read this</h3><ul class="small" style="margin:8px 0 0;padding-left:16px;color:var(--ink-2);line-height:1.8"><li><b>Resume claim</b>: a statement Alex made, confirmed by named people who were there.</li><li><b>Skill attestation</b>: issued by a person or company after observing the work.</li><li><b>Paid task</b>: a company confirmed Alex completed a real task and paid for it.</li><li>Every entry has a transaction you can open on any Base explorer.</li></ul></div>
+      <div class="card"><h3>Who vouched</h3><div class="stack small" style="margin-top:8px">${[['Priya Natarajan','Head of Design, Loom','strength 84'],['Daniel Okafor','Staff Designer, Loom','strength 79'],['Relay Analytics','Company · 27 issued','verified org'],['Maya Thompson','Eng lead, Cadence Health','pending']].map(v=>`<div class="row between"><div><b>${v[0]}</b><div class="muted">${v[1]}</div></div><span class="mini">${v[2]}</span></div>`).join('')}</div></div>
+      <div class="card"><h3>Got a stamped resume?</h3><p class="small muted" style="margin-top:4px">Paste the code from the footer to confirm the PDF you have is the one that was stamped.</p><button class="btn sm" style="margin-top:8px" data-view="stamp">Check a stamp ${I.arrow}</button></div>
+    </div>
+  </div>`;
+}
+function publicEntry(e){
+  const log=S.verifyLog[e.id];
+  return `<div class="entry"><div class="ic ${e.kind}">${KIND_ICON[e.kind]||I.shield}</div>
+    <div><div class="t">${e.title}</div><div class="m">${KIND_LABEL[e.kind]} · ${e.by}</div>
+    <div class="proof">${pillStatus(e.status)}<span class="hash" title="${e.tx}">tx ${shortHash(e.tx)}</span><span class="small muted">block ${e.block.toLocaleString()}</span></div>
+    ${log?`<div class="chainlog" style="margin-top:8px;min-height:0">${log}</div>`:''}</div>
+    <div class="stack" style="align-items:flex-end;gap:6px"><span class="small muted num">${fmtDate(e.date)}</span><button class="btn sm" data-verify="${e.id}">${I.chain} Verify</button></div></div>`;
+}
+function vStampCheck(){
+  const r=S.stampCheck;
+  return `
+  <div class="pub-note">${I.seal}<span>Public stamp checker at <span class="mono">vouch.id/check</span>. Works for any Vouch-stamped document.</span></div>
+  <div class="split">
+    <div class="card">
+      <h1 style="font-size:26px">Check a resume stamp</h1>
+      <p class="muted" style="margin-top:6px">Enter the code printed in the footer of a stamped resume, or drop the PDF to hash it locally. Nothing is uploaded.</p>
+      <div class="field" style="margin-top:14px"><label for="stampInput">Stamp code</label><div class="row" style="flex-wrap:nowrap"><input id="stampInput" class="mono" placeholder="VL-XXXX-XXXX-2026" value="${S.stampCode||''}"><button class="btn primary" data-checkstamp="1">Check</button></div><span class="hint">Try ${S.stampCode||'VL-8F3A-C21E-2026'}${S.stamped?'':' (Alex has not stamped yet; stamp from the Candidate view to see a live match)'}</span></div>
+      <div class="note" style="margin-top:12px;text-align:center;padding:22px;border-style:dashed">${I.doc} Drop a PDF here to compare its hash</div>
+      ${r?`<div class="card tight" style="margin-top:14px;border-color:${r.ok?'var(--good)':'var(--bad)'}">
+        <div class="row between"><div class="row">${r.ok?sealSVG('sealmini','','var(--good)'):''}<b>${r.ok?'Stamp is valid':'No stamp found'}</b></div>${r.ok?'<span class="pill good">Match</span>':'<span class="pill bad">Unknown code</span>'}</div>
+        ${r.ok?`<div class="proofbox" style="margin-top:10px"><b>holder</b><span>${S.candidate.name} · vouch.id/m/${S.candidate.handle}</span><b>stamped</b><span>${fmtDate(r.date)}</span><b>document</b><span>sha256 ${r.hash}</span><b>claims</b><span>6 verified · 1 pending · 1 unverified at time of stamp</span><b>anchor tx</b><span>${shortHash(r.tx)} · block ${r.block.toLocaleString()}</span><b>tamper check</b><span class="ok" style="color:var(--good)">document hash matches anchored hash</span></div>
+        <button class="btn sm" style="margin-top:10px" data-view="profile">Open ${S.candidate.name.split(' ')[0]}'s public ledger ${I.arrow}</button>`:`<p class="small muted" style="margin-top:6px">Codes are case-insensitive and look like VL-XXXX-XXXX-YYYY. If the resume has a QR, scan it instead.</p>`}
+      </div>`:''}
+    </div>
+    <div class="card"><h3>Why hiring managers use this</h3><ul class="small" style="margin:8px 0 0;padding-left:16px;color:var(--ink-2);line-height:1.8"><li>Takes ten seconds and no login.</li><li>The stamp date proves claims were verified before you posted the role.</li><li>Pending items are shown honestly, not hidden.</li><li>You are never charged. Companies pay Vouch Ledger to reach candidates as testers, not to reach you.</li></ul></div>
+  </div>`;
+}
+
+/* ---------- MODEL ---------- */
+function vFlywheel(){
+  return `
+  <div class="page-head"><div><div class="eyebrow">Business model</div><h1>The flywheel</h1><p>The original Vouch Ledger asked employers to pay for verification. This version makes distribution the product and verification the exhaust. Candidates get paid, companies get users, the ledger gets stronger, and the matching gets better.</p></div></div>
+  <div class="split">
+    <div class="card">
+      <svg class="flywheel" viewBox="0 0 560 520" role="img" aria-label="Flywheel: candidates join, complete paid tests, earn payouts and attestations, ledgers strengthen, matching improves, more companies pay">
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5 0 10z" fill="var(--muted)"/></marker></defs>
+        <circle cx="280" cy="260" r="150" fill="none" stroke="var(--line-2)" stroke-width="2" stroke-dasharray="4 6"/>
+        ${[[280,90,'Candidates join','to earn while searching','var(--accent-soft)','var(--accent-ink)'],[440,180,'Companies pay','$99–$899/mo for seats','var(--info-soft)','var(--info)'],[440,340,'Testers do tasks','sign-ups, UX, interviews, data','var(--info-soft)','var(--info)'],[280,430,'Payouts + attestations','80% to tester, entry minted','var(--seal-soft)','var(--seal)'],[120,340,'Ledgers strengthen','verified, portable, open','var(--accent-soft)','var(--accent-ink)'],[120,180,'Matching improves','better testers → more value','var(--accent-soft)','var(--accent-ink)']].map(([x,y,t,s,bg,fg])=>`<g><rect x="${x-78}" y="${y-30}" width="156" height="60" rx="12" fill="${bg}"/><text x="${x}" y="${y-5}" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="700" font-size="14" fill="${fg}">${t}</text><text x="${x}" y="${y+14}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--muted)">${s}</text></g>`).join('')}
+        ${[[358,100,400,148],[440,212,440,308],[400,372,358,420],[202,420,160,372],[120,308,120,212],[160,148,202,100]].map(([x1,y1,x2,y2])=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah)"/>`).join('')}
+        <text x="280" y="255" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="20" fill="var(--ink)">Vouch Ledger</text>
+        <text x="280" y="275" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--muted)">brokers · escrows · attests · takes 20%</text>
+      </svg>
+    </div>
+    <div class="stack" style="gap:18px">
+      <div class="card"><h3>Who pays whom</h3><div class="tbl-wrap"><table class="tbl" style="margin-top:6px"><tbody>
+        <tr><td>Company → Vouch</td><td class="r">Plan fee, monthly</td></tr>
+        <tr><td>Company → Vouch → Tester</td><td class="r">Payout, 80% passed through</td></tr>
+        <tr><td>Vouch keeps</td><td class="r">Plan + 20% of payouts</td></tr>
+        <tr><td>Hiring manager</td><td class="r"><b>$0</b></td></tr>
+        <tr><td>Candidate</td><td class="r"><b>$0</b>, earns</td></tr>
+      </tbody></table></div></div>
+      <div class="card"><h3>Why this beats the original model</h3><ul class="small" style="margin:8px 0 0;padding-left:16px;color:var(--ink-2);line-height:1.8"><li>Revenue starts with the first startup, not after employers adopt a new habit.</li><li>Candidates have a reason to show up daily even before a vouch arrives.</li><li>Every paid task is a third-party-confirmed ledger entry, so the verification product gets built as a side effect.</li><li>Startups get something they already budget for: users, feedback, and data.</li></ul></div>
+      <div class="card"><h3>Kitchen-sink offshoots (later)</h3><div class="chips" style="margin-top:8px">${['Referral bounties','Cohort betas','Skill screens as tests','Recruiter search over ledgers','Attestation API','Tester leagues','Founder office hours'].map(x=>`<span class="chip">${x}</span>`).join('')}</div></div>
+    </div>
+  </div>`;
+}
+function vRevenue(){
+  const m=S.model||{starter:20,growth:10,scale:2,tasks:14,avgPay:80};
+  const plan=m.starter*99+m.growth*299+m.scale*899;
+  const cos=m.starter+m.growth+m.scale;
+  const tasks=cos*m.tasks;
+  const payoutGross=tasks*m.avgPay/(1-FEE);
+  const fee=payoutGross*FEE;
+  const toTesters=payoutGross-fee;
+  const mrr=plan+fee;
+  const slider=(k,l,min,max,step,fmt)=>`<div class="field"><div class="row between"><label for="m-${k}">${l}</label><b class="num">${fmt(m[k])}</b></div><input class="range" type="range" id="m-${k}" data-model="${k}" min="${min}" max="${max}" step="${step}" value="${m[k]}"></div>`;
+  return `
+  <div class="page-head"><div><div class="eyebrow">Unit economics</div><h1>Revenue math</h1><p>Drag the sliders. Plan fees are predictable; the 20% on payouts scales with usage. Testers' earnings are shown too, because that number is the candidate-side pitch.</p></div></div>
+  <div class="split">
+    <div class="card stack" style="gap:16px">
+      ${slider('starter','Starter customers ($99)',0,200,1,v=>v)}
+      ${slider('growth','Growth customers ($299)',0,100,1,v=>v)}
+      ${slider('scale','Scale customers ($899)',0,40,1,v=>v)}
+      ${slider('tasks','Paid tasks per company per month',1,60,1,v=>v)}
+      ${slider('avgPay','Average payout to tester',20,300,5,v=>'$'+v)}
+    </div>
+    <div class="stack" style="gap:18px">
+      <div class="card"><div class="eyebrow">Monthly revenue to Vouch Ledger</div><div class="big" style="margin-top:6px">${money(mrr)}</div><div class="row small muted" style="margin-top:6px;gap:14px"><span>Plans ${money(plan)}</span><span>Fees ${money(fee)}</span><span>ARR ${money(mrr*12)}</span></div></div>
+      <div class="grid g2">
+        <div class="card kpi"><span class="l">Paid to testers / month</span><span class="v" style="font-size:24px">${money(toTesters)}</span><span class="d muted">${tasks.toLocaleString()} tasks · ${cos} companies</span></div>
+        <div class="card kpi"><span class="l">Attestations minted / month</span><span class="v" style="font-size:24px">${tasks.toLocaleString()}</span><span class="d muted">each strengthens a ledger</span></div>
+        <div class="card kpi"><span class="l">Avg company spend</span><span class="v" style="font-size:24px">${money(cos?(plan+payoutGross)/cos:0)}</span><span class="d muted">plan + payouts, per month</span></div>
+        <div class="card kpi"><span class="l">If 1 in 8 testers converts</span><span class="v" style="font-size:24px">${money(cos?payoutGross/cos/ (m.tasks/8||1):0)}</span><span class="d muted">implied CAC per company</span></div>
+      </div>
+      <div class="note">Assumes no churn and full seat usage. Starter is priced to be a no-brainer against a single paid-social experiment. Scale is priced against a UX research vendor retainer.</div>
+    </div>
+  </div>`;
+}
+function vPricing(){
+  return `
+  <div class="page-head"><div><div class="eyebrow">Pricing page</div><h1>Distribution you can budget for</h1><p>Would companies like us pay $50, $100, $500 a month for real users to touch our product? This page is the bet.</p></div></div>
+  <div class="grid g3">${Object.entries(PLANS).map(([k,p])=>`<div class="plan ${k==='growth'?'cur':''}">${k==='growth'?'<span class="cur-tag">Most picked</span>':''}<div class="eyebrow">${p.name}</div><div class="price">$${p.price}<small> / month</small></div><p class="small muted">${p.blurb}</p><ul>${p.feat.map(f=>`<li>${f}</li>`).join('')}</ul><div class="small muted">+ tester payouts as used (you set the amount)</div><button class="btn ${k==='growth'?'primary':''} sm" data-toast="Start ${p.name} (simulated)">Start ${p.name}</button></div>`).join('')}</div>
+  <div class="card"><h2>What a tester costs</h2><div class="tbl-wrap"><table class="tbl" style="margin-top:6px"><thead><tr><th>Task type</th><th>Typical time</th><th class="r">Typical payout</th><th class="r">You pay</th></tr></thead><tbody>
+    ${[['Unmoderated reaction test','10 min',25],['Sign up + 7-day usage with check-ins','7 days',85],['Moderated usability session','30 min',60],['Onboarding walkthrough + interview','45 min',120],['Expert data labeling (200 items)','2 hrs',150],['Customer discovery call','15 min',45]].map(r=>`<tr><td>${r[0]}</td><td class="muted">${r[1]}</td><td class="r">${money(r[2])}</td><td class="r" style="font-weight:600">${money(Math.round(r[2]/(1-FEE)))}</td></tr>`).join('')}
+  </tbody></table></div><p class="small muted" style="margin-top:10px">Testers see exactly what you paid and what they kept. Higher payouts get you stronger ledgers faster.</p></div>`;
+}
+
+/* ============================================================
+   FLOWS
+   ============================================================ */
+function acceptOpp(id){
+  set(s=>{const o=s.opps.find(x=>x.id===id);o.state='active';o.progress=o.steps.map(()=>false);o.started=today.toISOString();o.seats-=1;
+    s.payouts.unshift({id:uid(),date:today.toISOString(),company:o.company,what:o.title+' (in progress)',gross:Math.round(o.pay/(1-FEE)*100)/100,net:o.pay,status:'pending'});});
+  toast(`Accepted. ${money(S.opps.find(x=>x.id===id).pay)} is now held in escrow for you.`);
+}
+function stepDone(id,i){
+  const o=S.opps.find(x=>x.id===id);
+  if(i<o.steps.length-1){set(s=>{s.opps.find(x=>x.id===id).progress[i]=true;});toast('Step recorded');return;}
+  mintFlow(o);
+}
+function mintFlow(o){
+  const tx='0x'+hex(64);const block=19300000+Math.floor(Math.random()*90000);
+  modal(`<div class="stack" style="gap:14px;align-items:center;text-align:center">
+    <div class="eyebrow">Writing to your ledger</div>
+    <div class="seal-wrap" id="sealWrap" style="min-height:136px"></div>
+    <h2 id="mintTitle">Confirming with ${co(o.company).name}…</h2>
+    <div class="chainlog" id="chainlog" style="text-align:left;width:100%"></div>
+    <div class="row" id="mintActions" hidden><button class="btn primary" data-mintdone="${o.id}">See it on my ledger ${I.arrow}</button></div>
+  </div>`,{sticky:true,narrow:true});
+  const log=document.getElementById('chainlog');
+  const lines=[`> ${co(o.company).name} confirmed completion`,`> releasing escrow · ${money(o.pay)} to Alex · ${money(Math.round(o.pay/(1-FEE)-o.pay))} platform fee`,`> attest(schema: vouch.task.v2, recipient: ${S.candidate.did.slice(0,22)}…)`,`> tx ${shortHash(tx)} · awaiting inclusion`,`<span class="ok">✓ included in block ${block.toLocaleString()} · 2 confirmations</span>`,`<span class="ok">✓ attestation live · issued by ${co(o.company).name}</span>`];
+  lines.forEach((l,i)=>setTimeout(()=>{log.innerHTML+=l+'<br>';if(i===lines.length-1){document.getElementById('sealWrap').innerHTML=sealSVG('seal stamp',`ATTESTED · ${co(o.company).name.toUpperCase()} · `,'var(--accent)');document.getElementById('mintTitle').textContent=`${money(o.pay)} paid. Attestation minted.`;document.getElementById('mintActions').hidden=false;}},400+i*550));
+  set(s=>{const so=s.opps.find(x=>x.id===o.id);so.state='done';so.progress=so.steps.map(()=>true);
+    const p=s.payouts.find(x=>x.company===o.company&&x.status==='pending');if(p){p.status='paid';p.what=o.title;p.date=today.toISOString();}
+    s.ledger.forEach(e=>e.isNew=false);
+    s.ledger.push({id:uid(),kind:'task',title:o.title,by:`Completed for ${co(o.company).name} · paid ${money(o.pay)}`,date:today.toISOString(),tx,block,status:'verified',weight:8,payout:o.pay,company:o.company,isNew:true});
+    if(o.issues.some(x=>/skill/i.test(x))){s.ledger.push({id:uid(),kind:'skill',title:o.issues.find(x=>/skill/i.test(x)).replace(/^Skill:\s*/i,'').replace(/^\w/,c=>c.toUpperCase()),by:`Attested by ${co(o.company).name} after ${o.type.toLowerCase()}`,date:today.toISOString(),tx:'0x'+hex(64),block:block+1,status:'verified',weight:6,isNew:true});}
+    const cp=s.campaigns.find(c=>c.oppId===o.id);if(cp){cp.completed+=1;}
+    const t=s.pool.find(x=>x.name===s.candidate.name);if(t){t.att+=1;t.strength=Math.min(100,t.strength+6);}
+  });
+}
+function stampResume(){
+  const code='VL-8F3A-C21E-'+today.getFullYear();
+  set(s=>{s.stamped=true;s.stampCode=code;s.stampCheck=null;});
+  toast('Resume stamped. Code '+code,true);
+  setTimeout(()=>{const el=document.querySelector('.resume');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},50);
+}
+function checkStamp(){
+  const v=(document.getElementById('stampInput').value||'').trim().toUpperCase();
+  const ok=S.stamped&&v===S.stampCode.toUpperCase();
+  set(s=>{s.stampCheck={ok,date:today.toISOString(),hash:hex(16)+'…',tx:'0x'+hex(64),block:19318220};});
+  if(!ok)toast(S.stamped?'That code does not match any stamp':'Alex has not stamped a resume yet. Stamp one in the Candidate view first.');
+}
+function verifyEntry(id){
+  const e=S.ledger.find(x=>x.id===id);
+  const steps=[`> fetching attestation ${shortHash(e.tx)} from Base…`,`> recovering signer… ${e.kind==='task'||e.kind==='skill'&&/Relay/.test(e.by)?'0x4a…relay.eth (verified org)':'0x9b…'+hex(4)+' (verified person)'}`,`> checking revocation registry… none`,e.status==='verified'?`<span class="ok">✓ signature valid · anchored block ${e.block.toLocaleString()} · not revoked</span>`:`<span style="color:var(--warn)">⚠ 1 of 2 required vouches present · not yet final</span>`];
+  set(s=>{s.verifyLog[id]=steps[0];});
+  steps.slice(1).forEach((l,i)=>setTimeout(()=>{set(s=>{s.verifyLog[id]=(s.verifyLog[id]||'')+'<br>'+l;});},450*(i+1)));
+}
+function newCampaign(step=1,d={}){
+  d=Object.assign({type:'UX walkthrough + interview',title:'',pay:90,seats:10,needs:'Product design, B2B SaaS',issue:'Task attestation',skill:''},S.draft||{},d);
+  S.draft=d;
+  const cost=Math.round(d.pay/(1-FEE))*d.seats;
+  const left=S.company.seatsTotal-S.company.seatsUsed;
+  const stepsBar=`<div class="steps">${['Task','Testers','Review'].map((l,i)=>`<span class="s ${i+1<step?'done':i+1===step?'cur':''}"><span class="n">${i+1<step?'✓':i+1}</span><b>${l}</b></span>${i<2?'<span>›</span>':''}`).join('')}</div>`;
+  let body='';
+  if(step===1)body=`<div class="stack" style="gap:12px">
+    <div class="field"><label for="cType">What do you need from testers?</label><select id="cType">${['UX walkthrough + interview','Beta usage + feedback','Moderated usability test','Unmoderated reaction test','Customer discovery call','Training data · expert labeling'].map(t=>`<option ${t===d.type?'selected':''}>${t}</option>`).join('')}</select></div>
+    <div class="field"><label for="cTitle">Campaign title (testers see this)</label><input id="cTitle" value="${d.title}" placeholder="e.g. Try our new dashboard builder and tell us where you got stuck"></div>
+    <div class="field"><label for="cDesc">What testers will do</label><textarea id="cDesc" rows="3" placeholder="Sign up with your invite link, build one dashboard from the sample data, then a 20-minute call.">${d.desc||''}</textarea></div>
+    <div class="note">${I.spark} Suggested: companies that include a live call convert 2.1× more testers into customers.</div></div>`;
+  if(step===2)body=`<div class="stack" style="gap:12px">
+    <div class="grid g2"><div class="field"><label for="cPay">Payout per tester (they keep this)</label><input id="cPay" type="number" min="10" step="5" value="${d.pay}"><span class="hint">Billed ${money(Math.round(d.pay/(1-FEE)))} incl. 20% fee. Median for this type: $120.</span></div>
+    <div class="field"><label for="cSeats">Seats</label><input id="cSeats" type="number" min="1" max="${left}" value="${Math.min(d.seats,left)}"><span class="hint">${left} seats left this cycle</span></div></div>
+    <div class="field"><label for="cNeeds">Tester must have (verified on ledger)</label><input id="cNeeds" value="${d.needs}"><span class="hint">Comma-separated. We match against skill attestations and vouched claims, not self-description.</span></div>
+    <div class="grid g2"><div class="field"><label for="cIssue">Attestation you issue on completion</label><select id="cIssue"><option>Task attestation</option><option>Task attestation + skill</option></select></div><div class="field"><label for="cSkill">Skill name (if issuing one)</label><input id="cSkill" value="${d.skill}" placeholder="e.g. Product feedback"></div></div>
+    <div class="note">${I.users} 312 testers in the pool match "${d.needs}". Top 40 shown on your plan.</div></div>`;
+  if(step===3)body=`<div class="stack" style="gap:12px">
+    <div class="card tight flat" style="background:var(--surface-2)"><div style="font-weight:600">${d.title||'(untitled campaign)'}</div><div class="small muted">${d.type} · ${d.seats} seats · needs ${d.needs}</div></div>
+    <div class="proofbox"><b>payouts</b><span>${d.seats} × ${money(d.pay)} = ${money(d.pay*d.seats)}</span><b>platform fee</b><span>${money(cost-d.pay*d.seats)}</span><b>max total</b><span>${money(cost)} · charged only per completion</span><b>seats used</b><span>${d.seats} of ${left} remaining</span><b>issues</b><span>${d.issue}${d.skill?` · "${d.skill}"`:''}</span></div>
+    <div class="note">${I.shield} Testers never see this until they accept: nothing. You never see their contact details until they accept: also nothing. Escrow releases on your confirmation or after 72 hours.</div></div>`;
+  modal(`<div class="row between"><h2>New campaign</h2><button class="btn sm ghost" data-close="1">${I.x}</button></div><div style="margin:10px 0 16px">${stepsBar}</div>${body}
+    <div class="row between" style="margin-top:18px"><button class="btn ghost" ${step===1?'data-close="1"':`data-camp-step="${step-1}"`}>${step===1?'Cancel':'Back'}</button>${step<3?`<button class="btn primary" data-camp-step="${step+1}">Continue ${I.arrow}</button>`:`<button class="btn primary" data-camp-launch="1">${I.check} Launch campaign</button>`}</div>`);
+}
+function readDraft(){const g=id=>document.getElementById(id);const d=S.draft||{};if(g('cType'))d.type=g('cType').value;if(g('cTitle'))d.title=g('cTitle').value;if(g('cDesc'))d.desc=g('cDesc').value;if(g('cPay'))d.pay=Math.max(10,Number(g('cPay').value)||0);if(g('cSeats'))d.seats=Math.max(1,Number(g('cSeats').value)||1);if(g('cNeeds'))d.needs=g('cNeeds').value;if(g('cIssue'))d.issue=g('cIssue').value;if(g('cSkill'))d.skill=g('cSkill').value;S.draft=d;}
+function launchCampaign(){
+  readDraft();const d=S.draft;closeModal();
+  const oppId=uid();
+  const issues=['Task attestation'];if(d.skill)issues.push('Skill: '+d.skill);
+  set(s=>{
+    s.campaigns.unshift({id:uid(),oppId,status:'live',completed:0,seats:d.seats,pay:d.pay,converted:0,score:null,type:d.type,title:d.title||'Untitled campaign',issues,created:today.toISOString(),funnel:[['Invited',d.seats],['Accepted',0],['Started',0],['Completed',0],['Became customers',0]],quotes:[]});
+    s.company.seatsUsed=Math.min(s.company.seatsTotal,s.company.seatsUsed+d.seats);
+    s.opps.unshift({id:oppId,company:'relay',title:d.title||'Untitled campaign',type:d.type,pay:d.pay,time:/7-day|beta/i.test(d.type)?'7 days':/interview|walkthrough/i.test(d.type)?'45 min':/labeling/i.test(d.type)?'~2 hrs':'20 min',seats:d.seats,total:d.seats,issues,needs:d.needs.split(',').map(x=>x.trim()).filter(Boolean),match:91,desc:d.desc||'New campaign from Relay Analytics.',steps:/interview|walkthrough/i.test(d.type)?['Create account with your Vouch invite link','Complete the task','Complete the interview']:/beta/i.test(d.type)?['Install the app','Use it for 7 days','Submit daily check-ins']:['Book a slot','Complete the session'],state:'open'});
+    s.draft=null;
+  });
+  toast('Campaign is live. It now appears in the candidate marketplace.');
+}
+
+/* ============================================================
+   EVENTS
+   ============================================================ */
+document.addEventListener('click',(e)=>{
+  const b=e.target.closest('[data-role],[data-view],[data-go],[data-accept],[data-step],[data-filter],[data-copy],[data-stamp],[data-export],[data-askvouch],[data-nudge],[data-mklink],[data-toast],[data-newcamp],[data-camp-step],[data-camp-launch],[data-launch],[data-results],[data-closeresults],[data-invite],[data-plan],[data-verify],[data-checkstamp],[data-mintdone],[data-close]');
+  if(!b)return;
+  const d=b.dataset;
+  if(d.role){set(s=>{s.role=d.role;});window.scrollTo({top:0});}
+  else if(d.go){set(s=>{s.role=d.go;if(d.goview){if(d.go==='verify')s.vView=d.goview;}});window.scrollTo({top:0});}
+  else if(d.view){setView(d.view);}
+  else if(d.accept){acceptOpp(d.accept);}
+  else if(d.step){const [id,i]=d.step.split(':');stepDone(id,Number(i));}
+  else if(d.filter){set(s=>{s.oppFilter=d.filter;});}
+  else if(d.copy){copyText(d.copy);}
+  else if(d.stamp){stampResume();}
+  else if(d.export){const blob=JSON.stringify({'@context':'https://vouch.id/ns/v2',id:S.candidate.did,entries:S.ledger.map(e=>({type:e.kind,title:e.title,attester:e.by,tx:e.tx,block:e.block,status:e.status}))},null,2);modal(`<div class="row between"><h2>Export · JSON-LD</h2><button class="btn sm ghost" data-close="1">${I.x}</button></div><p class="small muted" style="margin:6px 0 10px">Portable, readable by any EAS-compatible tool. Host it anywhere.</p><pre class="chainlog" style="white-space:pre-wrap;max-height:50vh;overflow:auto">${blob.replace(/</g,'&lt;')}</pre><div class="row" style="margin-top:12px"><button class="btn primary" data-copy='${blob.replace(/'/g,'&#39;')}'>${I.copy} Copy JSON</button></div>`);}
+  else if(d.askvouch){const em=document.getElementById('vouchEmail').value||'maya@cadencehealth.com';toast(`Vouch request sent to ${em}`);}
+  else if(d.nudge){toast('Reminder sent to Maya Thompson');}
+  else if(d.mklink){const f=document.getElementById('applyFor').value.trim();if(!f){toast('Add the company and role first');return;}set(s=>{s.applyLinks.unshift({id:uid(),for:f,code:f.toLowerCase().replace(/[^a-z]/g,'').slice(0,3)+'-'+hex(3),views:0,created:today.toISOString()});});toast('Link created and copied');}
+  else if(d.toast){toast(d.toast);}
+  else if(d.newcamp){S.draft=null;newCampaign(1);}
+  else if(d.campStep){readDraft();newCampaign(Number(d.campStep));}
+  else if(d.campLaunch){launchCampaign();}
+  else if(d.launch){set(s=>{const c=s.campaigns.find(x=>x.id===d.launch);c.status='live';c.funnel=[['Invited',c.seats],['Accepted',0],['Started',0],['Completed',0],['Became customers',0]];s.company.seatsUsed=Math.min(s.company.seatsTotal,s.company.seatsUsed+c.seats);const oid=uid();c.oppId=oid;s.opps.unshift({id:oid,company:'relay',title:c.title,type:c.type,pay:c.pay,time:'30 min',seats:c.seats,total:c.seats,issues:c.issues,needs:['Product design','Analytics'],match:89,desc:'Moderated session on the new dashboard builder layout.',steps:['Book a slot','Complete the moderated session'],state:'open'});});toast('Campaign launched. Live in the candidate marketplace.');}
+  else if(d.results){set(s=>{s.openCampaign=d.results;s.coView='campaigns';});setTimeout(()=>document.getElementById('results')?.scrollIntoView({behavior:'smooth',block:'start'}),30);}
+  else if(d.closeresults){set(s=>{s.openCampaign=null;});}
+  else if(d.invite){set(s=>{s.company.invited.push(d.invite);});toast('Invite sent. They see the task, payout and the attestation you will issue.');}
+  else if(d.plan){set(s=>{s.company.plan=d.plan;s.company.seatsTotal=PLANS[d.plan].seats;});toast(`Switched to ${PLANS[d.plan].name}. Prorated today.`);}
+  else if(d.verify){verifyEntry(d.verify);}
+  else if(d.checkstamp){checkStamp();}
+  else if(d.mintdone){closeModal();set(s=>{s.cView='ledger';});setTimeout(()=>{const el=document.querySelector('.entry.new');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},60);}
+  else if(d.close){closeModal();}
+});
+document.addEventListener('input',(e)=>{const t=e.target;if(t.dataset&&t.dataset.model){S.model=Object.assign({starter:20,growth:10,scale:2,tasks:14,avgPay:80},S.model||{});S.model[t.dataset.model]=Number(t.value);save();const active=document.activeElement;const id=active&&active.id;render();if(id){const n=document.getElementById(id);if(n)n.focus();}}});
+document.addEventListener('keydown',(e)=>{if(e.key==='Escape')closeModal();if(e.key==='Enter'&&e.target.id==='stampInput')checkStamp();});
+document.getElementById('resetBtn').addEventListener('click',()=>{try{localStorage.removeItem(KEY);}catch(_){}const role=S.role;S=seed();S.role=role;save();render();toast('Demo data reset');});
+
+/* hash → initial view */
+(function(){const h=location.hash.replace('#','');if(!h)return;if(h==='overview'){S.role='home';return;}const [r,v]=h.split('-');if(RAILS[r]){S.role=r;if(v&&RAILS[r].some(x=>x[0]===v)){if(r==='candidate')S.cView=v;else if(r==='company')S.coView=v;else if(r==='verify')S.vView=v;else S.mView=v;}}})();
+render();
+</script>
+</body>
+</html>
