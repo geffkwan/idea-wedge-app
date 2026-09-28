@@ -3,6 +3,8 @@
 A single-file, high-fidelity prototype of the Vouch Ledger concept with the
 paid-testing revenue model layered on top of the original verified-ledger idea.
 
+Strategy and business context: see `CONCEPT.md` in this folder.
+
 Open `index.html` directly in a browser. No build step, no dependencies beyond
 Google Fonts (falls back to system fonts offline). State lives in memory with
 optional `localStorage` persistence; use **Reset demo** in the top bar to start over.
