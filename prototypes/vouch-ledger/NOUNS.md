@@ -6,6 +6,14 @@ talks about, pulled from the prototype (`index.html`) and the strategy notes
 through, and how it relates to its neighbours. It deliberately stops short of fields,
 keys, tables or a diagram. Those are yours.
 
+**A note on the chain.** The prototype and the concept notes talk about attestations
+being anchored on a public blockchain. That is a later phase. The first build is
+centralized: a standard relational database, or an append-only store if that fits
+the ledger semantics better, owned and operated by us. Wherever this document says
+"anchor", "chain" or "on-chain", read it as "a tamper-evident, immutable record we
+will eventually mirror to a chain". Model for immutability and portability now;
+leave room for an external anchor later; do not build for the chain yet.
+
 Nouns are grouped by area. Within each area they are roughly in order of importance.
 Words in **bold** are the nouns. Words in *italics* are candidate names for the same
 thing that the prototype uses interchangeably; pick one.
@@ -33,13 +41,25 @@ standing. A voucher is not an endorser in the LinkedIn sense: they never vouch f
 person in general, only for one claim at a time.
 
 **Hiring manager** (*reader*). Someone who opens a public profile or checks a stamp.
-Usually anonymous. Pays nothing, has no account in the base product. Exists in the
-model mainly as the origin of view events on apply links and stamp checks.
+They arrive from outside: a candidate applied to a role the hiring manager posted in
+some other system (a job board, an ATS, a careers page), and the candidate put a
+Vouch Ledger link in that application. The hiring manager follows the link. They are
+usually anonymous, pay nothing, and have no account in the base product. They exist
+in the model mainly as the origin of view events on apply links and stamp checks.
+
+Do not confuse the hiring manager with the **company** below. The company is our
+paying customer on the marketplace side. The hiring manager works for whatever
+employer the candidate applied to, which is almost always a different organization
+that has no relationship with us. It is technically possible for a marketplace
+customer to also be an employer a candidate applies to, but nothing in the model
+should assume or require that, and the two should not share a record.
 
 **Company** (*organization*, *verified org*). The paying customer on the marketplace
 side. Has a plan, team members, campaigns, a billing relationship, and a verified
 status that lets it issue attestations in its own name. A company is an issuer of
-attestations but never a voucher.
+attestations but never a voucher. A company is not the employer a candidate applies
+to; see the note under hiring manager. If the same organization ever plays both
+parts, that is two roles, not one record.
 
 **Team member.** A person acting on behalf of a company: creates campaigns, invites
 testers, confirms completions, pays invoices. The prototype shows a single implicit
@@ -63,8 +83,10 @@ person gives.
 Unique, chosen, changeable with care.
 
 **DID** (*decentralized identifier*). The stable, machine-readable identity that
-attestations are issued to and signed by. Never changes. The thing a chain record
-points at when it says "recipient" or "attester".
+attestations are issued to and signed by. Never changes. In the first build this is
+simply an immutable internal identifier for a person or company that is distinct
+from the handle and distinct from any login. The name is kept because it is what a
+chain record will point at later when it says "recipient" or "attester".
 
 **Employment** (*tenure*). A period during which a person worked at a company, with
 a role. Comes from LinkedIn import or work-email verification. Used to establish
@@ -80,13 +102,14 @@ period, not a permanent fact about the pair.
 ## 2. The ledger and trust
 
 **Ledger** (*record*, *profile*). The complete set of entries about one person.
-Portable: exportable as JSON-LD, readable on-chain without Vouch Ledger. One per
+Portable: exportable as JSON-LD now, readable on a chain without Vouch Ledger later. One per
 person. The public profile is a rendering of the ledger, not a separate thing.
 Vouchers' ledgers and candidates' ledgers are the same kind of thing; they just tend
 to contain different kinds of entries.
 
 **Entry.** One item on a ledger. Every entry has a kind, an issuer, a subject, a
-date, a status, a weight, and a chain anchor. The prototype shows six kinds:
+date, a status, a weight, and an immutable reference (an anchor later). The
+prototype shows six kinds:
 *claim*, *skill attestation*, *endorsement*, *paid task*, *credential*, and *vouch
 given*. Whether "entry" is one noun with a kind, or six nouns sharing a shape, is a
 modeling choice. The prototype treats it as one noun and the UI switches on kind.
@@ -113,11 +136,12 @@ goes to may not yet be a verified voucher; verification happens on their way to
 signing.
 
 **Attestation.** The general term for a signed statement, by an issuer, about a
-subject, following a schema, anchored on-chain. Vouches are attestations issued by
-people. Paid-task and skill attestations are issued by companies. Credentials are
-self-issued with a document hash. In the prototype every entry is backed by an
-attestation. If you keep "entry" as the ledger-facing noun, "attestation" is the
-chain-facing one; they may be the same row or two linked rows.
+subject, following a schema, written once and never edited. Vouches are attestations
+issued by people. Paid-task and skill attestations are issued by companies.
+Credentials are self-issued with a document hash. In the prototype every entry is
+backed by an attestation. If you keep "entry" as the ledger-facing noun,
+"attestation" is the immutable, portable one; they may be the same row or two
+linked rows. Later, attestations are what get mirrored to a chain.
 
 **Issuer** (*attester*). Whoever signed an attestation: a person (as voucher), a
 company, or the subject themselves (self-attested credential). Identified by DID.
@@ -125,14 +149,18 @@ company, or the subject themselves (self-attested credential). Identified by DID
 **Subject** (*recipient*). The person an attestation is about.
 
 **Schema.** The named shape of an attestation (`vouch.task.v2`, `vouch.claim.v2`).
-Versioned. Lets third-party tools read the chain record without us.
+Versioned. Exists so exports are readable by third parties now and so attestations
+can be mirrored to a chain later without reshaping them.
 
-**Anchor** (*transaction*, *block*). The chain reference for an attestation:
-transaction hash, block number, chain name. Immutable once written. The off-chain
-copy is what the app reads; the anchor is what a sceptic verifies against.
+**Anchor** (*transaction*, *block*). Later phase. The external, tamper-evident
+reference for an attestation once it is mirrored to a chain: transaction hash, block
+number, chain name. For now, leave room for it (an attestation may have zero or one
+anchor) and otherwise ignore it. In the first build, immutability comes from the
+store itself: append-only rows, no updates, no deletes.
 
 **Revocation.** An issuer withdrawing an attestation. Public, dated, and leaves the
-original in place with a revoked status rather than deleting it.
+original in place rather than deleting it. In an append-only store this is naturally
+a new record that points at the old one.
 
 **Dispute** (*contest*). A challenge to a claim or vouch, with a review and an
 outcome. If a vouched claim fails review, the voucher's standing falls. The prototype
@@ -154,7 +182,8 @@ entry is pending (half weight) or verified. Worth capturing at the moment it was
 computed so history is explainable.
 
 **Credential.** A self-attested entry backed by a document hash (a certification
-PDF). Low weight. The hash is anchored; the document itself is not stored on-chain.
+PDF). Low weight. We keep the hash in the immutable record; the document itself is
+stored separately and never becomes part of the ledger.
 
 ## 3. The marketplace
 
@@ -268,8 +297,8 @@ Has a hash. A candidate may upload several versions.
 Carries a status at stamping time: verified, pending, unverified.
 
 **Stamp.** The act and the record of sealing one resume version: the document hash,
-the date, a check code, the status of each line at that moment, and a chain anchor.
-Immutable. A new version of the resume gets a new stamp. The stamped PDF is an
+the date, a check code, and the status of each line at that moment. Immutable. Gets
+an anchor later like any other attestation. A new version of the resume gets a new stamp. The stamped PDF is an
 output, not the record.
 
 **Stamp check.** Someone entering a check code or dropping a PDF to verify a stamp.
@@ -296,8 +325,8 @@ Collapse these before you start:
 - *Candidate*, *member*, *tester* → one role.
 - *Campaign*, *opportunity*, *paid test*, *listing* → one noun (campaign) plus a
   projection (listing).
-- *Entry*, *attestation* → decide whether these are one thing or an app-facing and a
-  chain-facing pair.
+- *Entry*, *attestation* → decide whether these are one thing or an app-facing and an
+  immutable, export-facing pair.
 - *Issuer*, *attester*, *signer* → one noun.
 - *Record*, *ledger*, *profile* → ledger is the data; profile is the public
   rendering.
@@ -334,32 +363,37 @@ Not a schema, but things the model must make impossible or at least visible:
 - Contact details of a candidate are not visible to a company until an engagement
   exists between them.
 - A stamp is immutable; a changed resume is a new stamp.
-- Every entry that counts toward strength has a chain anchor or is explicitly marked
-  as pending one.
+- Every entry that counts toward strength is an immutable record. Once written it is
+  superseded or revoked, never edited in place.
 
-## 9. Decisions I am leaving to you
+## 9. Open Questions
 
-Open questions where the prototype took a shortcut and the real model should
-choose:
+Places where the prototype took a shortcut and the real model should choose:
 
 1. Is a **claim** an entry on the ledger from the moment it is written, or does it
    become an entry only when the first vouch arrives? The prototype shows pending
    claims on the ledger at half weight.
 2. Is **identity verification** history kept (each check, each outcome) or only the
    current tier? The weighting rules suggest history.
-3. Where does the **off-chain copy** of an attestation live relative to the
-   **entry**, and which one is the source of truth when they disagree?
+3. Are **entry** and **attestation** one record or two? If two, which is the source
+   of truth for what the app shows, and which is the one that gets exported and,
+   later, mirrored to a chain?
 4. Does an **engagement** own its **payout**, or does a payout reference an
    engagement? The invariants only require a one-to-one.
 5. Are **campaign steps** a template copied into each engagement, or referenced with
    per-engagement progress kept separately?
 6. How is a **relationship** verified: stored as its own fact between two people at
    an employer, or recomputed from employment overlap each time it is needed?
-7. Is a **revocation** a status change on the attestation or a new attestation that
-   references the old one? The chain side will likely force the second.
+7. Is a **revocation** a status change on the attestation or a new record that
+   references the old one? An append-only store, and the eventual chain mirror, both
+   push toward the second.
 8. Multi-tenancy for **companies**: a team member can belong to more than one
    company. Decide early.
 9. **Seats**: reserved at launch, consumed at engagement, or consumed at completion?
    The prototype reserves at launch, which is the simplest and the least fair.
 10. Which **task types** need their own feedback shape, and whether that is a typed
     structure or a schemaless blob per type.
+11. Standard relational store with append-only discipline on the ledger tables, or a
+    purpose-built append-only store for the ledger and relational for everything
+    else? Either works for phase one; the choice affects how easy the later chain
+    mirror is.
