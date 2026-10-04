@@ -1,41 +1,35 @@
-# Vouch Ledger — interactive prototype
+# Vouch Ledger — prototypes
 
-A single-file, high-fidelity prototype of the Vouch Ledger concept with the
-paid-testing revenue model layered on top of the original verified-ledger idea.
+Two surfaces, one design system, no build step. Open either HTML file directly in a
+browser (Google Fonts load from the network; everything else is local).
 
-Strategy and business context: see `CONCEPT.md` in this folder. Domain vocabulary for
-data modeling: see `NOUNS.md`.
-
-Open `index.html` directly in a browser. No build step, no dependencies beyond
-Google Fonts (falls back to system fonts offline). State lives in memory with
-optional `localStorage` persistence; use **Reset demo** in the top bar to start over.
-
-## What it covers
-
-| Perspective | Screens |
+| Path | What it is |
 | --- | --- |
-| **Overview** | Landing page with the three audiences and a live ledger ticker |
-| **Candidate** | Home, paid-test marketplace, active task workflow with escrow + on-chain minting moment, portable ledger, Vouches (who confirmed what, identity tiers, request-a-vouch flow), resume stamping, tracked apply links, earnings wallet |
-| **Voucher** | Inbox of vouch requests as a neutral outsider (Maya Thompson), review-and-sign flow tied to one specific claim, the voucher's own record and standing, and a page on how vouching works |
-| **Company** | Growth overview, campaign list + results (funnel, quotes, cost per customer), 3-step campaign builder, ranked tester pool, plans and billing |
-| **Verify** | Public candidate page a hiring manager sees (no account), per-entry chain verification, stamped-resume checker |
-| **Model** | Flywheel diagram, revenue sliders (plans + 20% take on payouts), pricing page and per-task cost table |
+| `index.html` | **Marketing site.** Bold, neo-brutalist front door. Includes the anonymized "browse the pool" section so companies can look before they buy. Every CTA deep-links into the app. |
+| `app/index.html` | **Product prototype.** Sign-in, then the candidate, voucher and company workspaces, plus the public profile a hiring manager sees. Shared in-memory state across all personas, persisted to `localStorage`. |
+| `design/tokens.css` | **Shared design system.** Palette, type, borders, shadows, and the component classes both surfaces use. |
+| `design/DESIGN.md` | Voice and look rules, palette usage, status colors, and how the site and app link together. |
+| `CONCEPT.md` | Where the idea came from, the actors, how money moves, the trust architecture, and the Idea Wedge gates. |
+| `NOUNS.md` | Domain vocabulary for data modeling. |
 
-All sides share one state: launch a campaign as the company and it appears
-in the candidate marketplace; complete a task as the candidate and the company's
-campaign counter, the wallet, the ledger and the public profile all update; send a
-vouch request as the candidate and answer it as the voucher, and the claim flips to
-verified on the candidate's ledger and public page while the voucher's standing rises.
+## Palette
+
+| Swatch | Role |
+| --- | --- |
+| `#201A21` ink | Text, borders, inverted sections |
+| `#E1B9ED` lilac, `#F0F2B3` butter | Main colors |
+| `#EE4239` signal | Used less: impact sections, the one CTA that matters, alerts |
+| `#ECEDE4` bone | Neutral ground to give the reader a break |
+| `#32326C` navy, `#A15A71` plum | Sparing accents (info, pending) |
 
 ## Model assumptions baked in
 
 - Plans: Starter $99 / Growth $299 / Scale $899 per month, buying tester seats.
 - Tester payouts are set by the company and passed through; Vouch keeps 20%.
 - Vouches come from identity-verified outsiders (LinkedIn, work email, optional
-  government ID), tied to one specific claim, signed onto both ledgers. External
-  vouches carry the largest share of ledger strength; company attestations only
-  confirm paid tasks and observed skills.
+  government ID), tied to one specific claim, signed onto both records.
 - Hiring managers, candidates and vouchers never pay. Vouchers earn standing.
-- Attestations follow an EAS-style schema on Base so the ledger is portable.
+- Phase one is centralized: records are signed and sealed in our store and can be
+  mirrored to a public chain later. The UI no longer talks about blocks or hashes.
 
-All people, companies, hashes and numbers are fictional.
+All people, companies and numbers are fictional.
