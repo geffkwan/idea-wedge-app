@@ -154,12 +154,47 @@ h4{ font-size:17px; font-stretch:105 }
 .rule.dot{ border-top:3px dotted var(--line) }
 .rule.heavy{ border-top-width:6px }
 
-/* Background textures */
-.tex-grid{ background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px); background-size:32px 32px }
-.tex-dots{ background-image:radial-gradient(var(--line-soft) 1.2px,transparent 1.3px); background-size:14px 14px }
+/* Background textures.
+   Working name direction: "Seen". Textures are derivatives of sight: things resolving into
+   focus (halftone that sharpens), an aperture/iris (rings), a scan raster, and viewfinder
+   reticle marks instead of full frames. The old grid is retired. */
+.tex-resolve{ position:relative; isolation:isolate }
+.tex-resolve::before{ content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background-image:radial-gradient(color-mix(in srgb, var(--ink) 22%, transparent) 1.6px, transparent 1.7px);
+  background-size:11px 11px;
+  -webkit-mask-image:linear-gradient(100deg, transparent 38%, #000 100%); mask-image:linear-gradient(100deg, transparent 38%, #000 100%) }
+.tex-resolve.from-left::before{ -webkit-mask-image:linear-gradient(260deg, transparent 38%, #000 100%); mask-image:linear-gradient(260deg, transparent 38%, #000 100%) }
+.tex-resolve.from-top::before{ -webkit-mask-image:linear-gradient(0deg, transparent 30%, #000 100%); mask-image:linear-gradient(0deg, transparent 30%, #000 100%) }
+.tex-resolve.coarse::before{ background-size:18px 18px; background-image:radial-gradient(color-mix(in srgb, var(--ink) 22%, transparent) 3px, transparent 3.2px) }
+.tex-aperture{ position:relative; isolation:isolate }
+.tex-aperture::before{ content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background:repeating-radial-gradient(circle at var(--ap-x,88%) var(--ap-y,42%), transparent 0 46px, color-mix(in srgb, var(--ink) 16%, transparent) 46px 48px) }
+.tex-aperture.ink::before{ background:repeating-radial-gradient(circle at var(--ap-x,88%) var(--ap-y,42%), transparent 0 46px, color-mix(in srgb, var(--bone) 18%, transparent) 46px 48px) }
 .tex-scan{ position:relative }
 .tex-scan::after{ content:""; position:absolute; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.12) 3px 4px); mix-blend-mode:multiply }
+.tex-raster{ background-image:repeating-linear-gradient(0deg, color-mix(in srgb, var(--ink) 10%, transparent) 0 1px, transparent 1px 6px) }
 .tex-diag{ background-image:repeating-linear-gradient(-45deg,var(--line) 0 2px,transparent 2px 10px) }
+.tex-dots{ background-image:radial-gradient(var(--line-soft) 1.2px,transparent 1.3px); background-size:14px 14px }
+/* Legacy: kept so nothing breaks, but do not use. */
+.tex-grid{ background-image:none }
+
+/* Reticle: viewfinder corner marks instead of a full frame. Use on any block that needs
+   to be "in view" without being boxed. --rl is the arm length, --rt the thickness. */
+.reticle{ --rl:16px; --rt:2px; position:relative; border:0;
+  background-image:
+    linear-gradient(var(--line),var(--line)),linear-gradient(var(--line),var(--line)),
+    linear-gradient(var(--line),var(--line)),linear-gradient(var(--line),var(--line)),
+    linear-gradient(var(--line),var(--line)),linear-gradient(var(--line),var(--line)),
+    linear-gradient(var(--line),var(--line)),linear-gradient(var(--line),var(--line));
+  background-position:top left,top left,top right,top right,bottom left,bottom left,bottom right,bottom right;
+  background-size:var(--rl) var(--rt),var(--rt) var(--rl),var(--rl) var(--rt),var(--rt) var(--rl),var(--rl) var(--rt),var(--rt) var(--rl),var(--rl) var(--rt),var(--rt) var(--rl);
+  background-repeat:no-repeat }
+.reticle.signal{ --line:var(--signal) }
+.reticle.lg{ --rl:28px; --rt:3px }
+/* Crosshair: a small sight mark for labels and list markers. */
+.xhair{ display:inline-block; width:12px; height:12px; flex:none; background:
+  linear-gradient(var(--signal),var(--signal)) center/100% 2px no-repeat,
+  linear-gradient(var(--signal),var(--signal)) center/2px 100% no-repeat }
 
 /* ---------------------------------------------------------------- primitives */
 .box{ background:var(--surface); border:var(--bw) solid var(--line); border-radius:var(--r); padding:18px }

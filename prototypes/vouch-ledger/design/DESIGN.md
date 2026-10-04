@@ -34,17 +34,22 @@ Rules:
    - `#32326C` navy and `#A15A71` plum: sparingly. Navy = info/links in prose. Plum =
      pending/warm secondary. Never as large fills on the site; small accents only.
 2. **No border radius.** Ever. Square avatars, square chips, square modals.
-3. **2px ink borders** on anything that is a thing. Hard offset shadows
-   (`4px 4px 0 ink`) on anything that is raised or interactive. Press-down physics
-   on buttons (hover lifts, active drops).
+3. **2px ink borders** on anything that is an object (a card in the pool, a plan, a
+   button, a modal). Content that is merely *in view* gets reticle corners or a single
+   rule, not a box, and sits directly on bone. Hard offset shadows (`4px 4px 0 ink`)
+   on anything that is raised or interactive. Press-down physics on buttons (hover
+   lifts, active drops).
 4. **Type:** Archivo (variable; display at `font-stretch: 118%`, weight 900,
    uppercase, tight tracking) for headlines and big numbers. JetBrains Mono for
    labels, buttons, tags, data, code. Archivo normal width for body.
 5. **Labels are terminal labels.** `[01] CANDIDATES`, `// WHY IT WORKS`, `> VERIFY`.
    Uppercase mono, 11–12px, letterspaced. The bracket index is signal red.
-6. **Textures:** faint grid (`.tex-grid`) on bone sections, scanlines (`.tex-scan`)
-   on inverted sections, dotted/dashed rules, marquee tickers, blinking cursor.
-   Use one texture per section, not three.
+6. **Textures are derivatives of the name.** Working direction is "Seen", so every
+   texture descends from sight: halftone that resolves into focus (`.tex-resolve`),
+   aperture/iris rings (`.tex-aperture`), a scan raster (`.tex-raster`, `.tex-scan` on
+   inverted sections), and viewfinder reticle marks (`.reticle`) in place of full
+   frames. The grid is retired. Bone sections stay mostly flat so the reader gets a
+   break. One texture per section, not three. If the name changes, re-derive.
 7. **Rhythm on the site:** alternate loud and quiet. A lilac or butter section,
    then a bone section. Signal red at most once or twice per page as a full
    section. Inverted ink sections for "terminal" moments (live ledger, how
